@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "dumbexample.h": "c",
+        "bst.h": "c",
+        "data.h": "c",
+        "stdio.h": "c",
+        "limits": "c",
+        "*.tcc": "c",
+        "unistd.h": "c",
+        "string.h": "c",
+        "stdlib.h": "c"
+    }
+}

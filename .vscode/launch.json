@@ -1,0 +1,22 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+            // "args": ["testFiles/data.csv"," < ../src/testFiles/PUs"],
+            // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            // "program": "${workspaceRoot}/bin/data_test",
+            "program": "${workspaceRoot}/bin/./example1.o",
+            "args": ["src/testFiles/data.csv", "src/testFiles/output2.txt",  "<", "src/testFiles/keys"],
+            "cwd": "${workspaceFolder}",
+            "MIMode": "lldb",
+            // "externalConsole": true,
+        
+        
+    }
+    ]
+}
