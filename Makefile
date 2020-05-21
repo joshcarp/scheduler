@@ -27,11 +27,11 @@ setup:
 
 ## build-tests: Builds the test binaries
 build-tests: $(SRCS) $(UNITYFILES) $(TESTS)
-	$(foreach file, $(TESTTARGETS), $(shell gcc -std=c99 -g -Wall $(file) $(UNITYFILES) $(SRCS)  -o bin$(patsubst %.c,/%.o,$(notdir  $(file)))))
+	$(foreach file, $(TESTTARGETS), $(shell gcc  -g -Wall $(file) $(UNITYFILES) $(SRCS) -fsanitize=address -o bin$(patsubst %.c,/%.o,$(notdir  $(file)))))
 
 ## build-main:  Builds the main programs in cmd/
 build-main: $(SRCS) $(MAINTARGETS)
-	$(foreach file, $(MAINTARGETS), $(shell gcc -std=c99 -g -Wall $(file) $(SRCS)  -o bin$(patsubst %.c,/%.o,$(notdir  $(file)))))
+	$(foreach file, $(MAINTARGETS), $(shell gcc  -g -Wall $(file) $(SRCS) -fsanitize=address -o bin$(patsubst %.c,/%.o,$(notdir  $(file)))))
 
 ## clean:       Removes all files in bin/
 clean:

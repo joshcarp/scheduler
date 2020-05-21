@@ -1,6 +1,6 @@
 #include <stdlib.h>
-#include <stdio.h>
-
-int main(){
-    printf("Hello world\n");
+int main() {
+  char *x = (char*)malloc(10 * sizeof(char*));
+  free(x);
+  return x[5];
 }
