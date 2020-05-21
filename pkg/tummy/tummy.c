@@ -11,7 +11,5 @@ as well as code for the randomising input*/
 int boo(){
   char *x = (char*)malloc(10 * sizeof(char*));
   free(x);
-  return x[5];
-  return 700;
-  
+  return 69;
 }
