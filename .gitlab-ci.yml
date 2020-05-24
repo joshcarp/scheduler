@@ -1,7 +1,7 @@
 image: 115.146.92.24:5000/comp30023/p2:latest
 test:
     script:
-        - ls /tests/scenarios
+        # - ls /tests/scenarios
         # - cat /tests/cases/testcase1.in
         # - cat /tests/cases/testcase1.out
         # - cat /tests/cases/testcase2.in
@@ -24,6 +24,10 @@ test:
         # - cat /tests/cases/testcase10.out
         # - cat /tests/cases/testcase11.in
         # - cat /tests/cases/testcase11.out
+        - cat /tests/scenarios/processes.txt
+        - cat /tests/scenarios/reordering.txt
+        - cat /tests/scenarios/rr_memoryoverlap.txt
+        - cat /tests/scenarios/timejumps.txt
 
 variables:
     GIT_STRATEGY: clone
