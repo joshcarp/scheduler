@@ -28,6 +28,7 @@
         "type_traits": "c",
         "vector": "c",
         "algorithm": "c",
-        "memory_resource": "c"
+        "memory_resource": "c",
+        "__split_buffer": "c"
     }
 }

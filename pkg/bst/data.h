@@ -20,9 +20,13 @@ typedef struct datat{
 	int memsize;
 	int jobtime;
 	int remaining;
-	struct datat * next;
+	struct datat * llNext;
+	struct datat * queueNext;
 }datat;
 
+typedef struct queue{
+	struct datat *front, *rear;
+}queue;
 
 dictKey_t *NewKey();
 datat *newData (char *entry);
@@ -38,3 +42,10 @@ datat* linkData(datat*, datat*);
 int searchData(datat *,int, FILE*, char *);
 void freeData(datat*);
 // char *fgets_noNL(char *, int, FILE *);
+
+
+queue *NewQueue ();
+
+void addToQueue (queue *q, datat *d);
+
+datat* getFromQueue (queue *q);

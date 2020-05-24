@@ -12,7 +12,7 @@ int left (datat *head)
     while (data)
     {
         count += data->remaining != 0;
-        data = data->next;
+        data = data->llNext;
     }
     return count;
 }
@@ -22,27 +22,50 @@ int next (node_t *head, enum scheduler type, int quantum)
     datat *this = toList (head);
     int time = 0;
     int remaining = left (this);
+    // queue *q = NewQueue ();
     do
     {
 
-        time = next_helper (this, type, quantum, time, remaining);
+        time = next_helper (this, type, quantum, time);
         remaining = left (this);
     } while (remaining);
     return 0;
 }
 
 
-int next_helper (datat *head, enum scheduler type, int quantum, int time, int remaining)
+int next_helper (datat *head, enum scheduler type, int quantum, int time)
 {
+    queue *q = NewQueue ();
+    int remaining = left (head);
     if (head == NULL)
     {
         return time;
     }
+    datat *next = NULL;
     datat *data = head;
-    while (data)
+    while (remaining != 0)
     {
-        time = apply_quantum (head, data, quantum, time);
-        data = data->next;
+        while (data)
+        {
+            if (time < data->arrival)
+            {
+                break;
+            }
+            if (time >= data->arrival)
+            {
+                addToQueue (q, data);
+            }
+            data = data->llNext;
+        }
+        if (next != NULL && next->remaining != 0)
+        {
+            addToQueue (q, next);
+        }
+        next = getFromQueue (q);
+        time = apply_quantum (head, next, quantum, time);
+
+
+        remaining = left (head);
     }
     return time;
 }
@@ -60,11 +83,16 @@ int apply_quantum (datat *head, datat *next, int quantum, int time)
         time += next->remaining;
         next->remaining = 0;
     }
-    else if (quantum <= next->remaining)
+    else if (quantum < next->remaining)
     {
         time += quantum;
         next->remaining -= quantum;
         return time;
+    }
+    else if (quantum == next->remaining)
+    {
+        time += quantum;
+        next->remaining = 0;
     }
     else
     {

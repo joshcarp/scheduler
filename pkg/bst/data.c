@@ -41,7 +41,7 @@ datat *newData (char *entry)
     char fields[MAXFIELDNUM][MAXFIELD];
     fieldFromStr (entry, fields);
     datat *d = blankData ();
-    d->next = NULL;
+    d->llNext = NULL;
     // strncpy (d->key, key, 20);
 
     d->key = atoi (fields[0]);
@@ -58,10 +58,10 @@ datat *newData (char *entry)
 void freeData (datat *d)
 {
     assert (d);
-    if (d->next != NULL)
+    if (d->llNext != NULL)
     {
-        freeData (d->next);
-        d->next = NULL;
+        freeData (d->llNext);
+        d->llNext = NULL;
     }
     free (d);
 }
@@ -70,7 +70,8 @@ void freeData (datat *d)
 datat *blankData ()
 {
     datat *d = (datat *)malloc (sizeof (datat));
-    d->next = NULL;
+    d->llNext = NULL;
+    d->queueNext = NULL;
     assert (d);
     return d;
 }
@@ -87,20 +88,20 @@ datat *linkData (datat *d, datat *e)
     {
         if (next->procid <= e->procid)
         {
-            if (next->next == NULL || next->next->procid >= e->procid)
+            if (next->llNext == NULL || next->llNext->procid >= e->procid)
             {
-                tmp = next->next;
-                next->next = e;
-                e->next = tmp;
+                tmp = next->llNext;
+                next->llNext = e;
+                e->llNext = tmp;
                 set = 1;
                 break;
             }
         }
-        next = next->next;
+        next = next->llNext;
     }
     if (!set)
     {
-        e->next = d;
+        e->llNext = d;
         return e;
     }
     return d;
@@ -158,4 +159,43 @@ void printFAttr (datat *d, FILE *outFile, char *Attr)
 void printData (datat *d)
 {
     printf ("%d", d->key);
+}
+
+queue *NewQueue ()
+{
+    queue *q = (struct queue *)malloc (sizeof (struct queue));
+    q->front = q->rear = NULL;
+    return q;
+}
+
+void addToQueue (queue *q, datat *d)
+{
+    struct datat *temp = d;
+
+    // If queue is empty, then new node is front and rear both
+    if (q->rear == NULL)
+    {
+        q->front = q->rear = temp;
+        return;
+    }
+
+    // Add the new node at the end of queue and change rear
+    q->rear->queueNext = temp;
+    q->rear = temp;
+}
+
+datat *getFromQueue (queue *q)
+{
+    if (q->front == NULL)
+    {
+        return NULL;
+    }
+
+    datat *temp = q->front;
+
+    q->front = q->front->queueNext;
+
+    if (q->front == NULL) q->rear = NULL;
+
+    return temp;
 }

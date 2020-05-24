@@ -31,3 +31,4 @@ node_t*  fileToHead(FILE*, node_t *);
 
 datat *toList_helper (node_t *head, datat *parent);
 datat *toList (node_t *head);
+datat *filter (datat *head, int time);

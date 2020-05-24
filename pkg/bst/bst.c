@@ -125,11 +125,11 @@ datat *toList_helper (node_t *head, datat *parent)
     }
     toList_helper (head->lt, parent);
     datat *data = parent;
-    while (data->next)
+    while (data->llNext)
     {
-        data = data->next;
+        data = data->llNext;
     }
-    data->next = head->data;
+    data->llNext = head->data;
     toList_helper (head->gt, parent);
     return parent;
 }
@@ -138,5 +138,5 @@ datat *toList (node_t *head)
 {
     datat *parent = blankData ();
     toList_helper (head, parent);
-    return parent->next;
+    return parent->llNext;
 }

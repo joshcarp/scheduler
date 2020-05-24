@@ -19,6 +19,6 @@ int next(node_t *head, enum scheduler type, int quantum);
 
 int apply_quantum (datat *head, datat *next, int quantum, int time);
 
-int next_helper (datat *head, enum scheduler type, int quantum, int time, int remaining);
+int next_helper (datat *head, enum scheduler type, int quantum, int time);
 
 int left(datat *head);

@@ -33,7 +33,7 @@
 // 	bstInsert(head, newData("1"));
 
 // 	TEST_ASSERT(cmp(head->gt->data->key, "1") == EQ)
-// 	TEST_ASSERT(cmp(head->gt->data->next->key, "1") == EQ)
+// 	TEST_ASSERT(cmp(head->gt->data->llNext->key, "1") == EQ)
 // 	freeTree(head);
 // }
 
