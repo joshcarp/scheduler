@@ -43,11 +43,13 @@ datat *newData (char *entry)
     datat *d = blankData ();
     d->next = NULL;
     // strncpy (d->key, key, 20);
+
     d->key = atoi (fields[0]);
     d->arrival = atoi (fields[0]);
     d->jobtime = atoi (fields[3]);
     d->procid = atoi (fields[1]);
     d->memsize = atoi (fields[2]);
+    d->remaining = d->jobtime;
 
     return d;
 }

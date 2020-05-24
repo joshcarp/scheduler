@@ -1,4 +1,9 @@
-#include "../../pkg/dummy/bst.h"
+#include "../../pkg/scheduler/scheduler.h"
+#ifndef BST_H
+#define BST_H
+
+#include "../../pkg/bst/bst.h"
+#endif
 #include <assert.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -37,5 +42,6 @@ int main (int argc, char **argv)
     FILE *inFile = fopen (file, "r");
     assert (inFile);
     node_t *head = parseFile (inFile);
+    next (head, round_robin, -1, 0);
     return 0;
 }
