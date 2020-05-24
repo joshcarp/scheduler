@@ -19,7 +19,6 @@ typedef struct datat{
 	int procid;
 	int memsize;
 	int jobtime;
-	int location;
 	int remaining;
 	struct datat * next;
 }datat;
@@ -38,4 +37,4 @@ void fieldFromStr(char *row, char dest[MAXFIELDNUM][MAXFIELD]);
 datat* linkData(datat*, datat*);
 int searchData(datat *,int, FILE*, char *);
 void freeData(datat*);
-char *fgets_noNL(char *, int, FILE *);
+// char *fgets_noNL(char *, int, FILE *);

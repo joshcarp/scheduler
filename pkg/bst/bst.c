@@ -116,3 +116,27 @@ node_t *parseFile (FILE *file)
     }
     return head;
 }
+
+datat *toList_helper (node_t *head, datat *parent)
+{
+    if (head == NULL)
+    {
+        return parent;
+    }
+    toList_helper (head->lt, parent);
+    datat *data = parent;
+    while (data->next)
+    {
+        data = data->next;
+    }
+    data->next = head->data;
+    toList_helper (head->gt, parent);
+    return parent;
+}
+
+datat *toList (node_t *head)
+{
+    datat *parent = blankData ();
+    toList_helper (head, parent);
+    return parent->next;
+}

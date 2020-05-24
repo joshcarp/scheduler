@@ -17,33 +17,10 @@ int left (datat *head)
     return count;
 }
 
-datat *toList_helper (node_t *head, datat *parent)
-{
-    if (head == NULL)
-    {
-        return parent;
-    }
-    toList_helper (head->lt, parent);
-    datat *data = parent;
-    while (data->next)
-    {
-        data = data->next;
-    }
-    data->next = head->data;
-    toList_helper (head->gt, parent);
-    return parent;
-}
-
-datat *toList (node_t *head)
-{
-    datat *parent = blankData ();
-    toList_helper (head, parent);
-    return parent->next;
-}
-
-int next (node_t *head, enum scheduler type, int quantum, int time)
+int next (node_t *head, enum scheduler type, int quantum)
 {
     datat *this = toList (head);
+    int time = 0;
     int remaining = left (this);
     do
     {

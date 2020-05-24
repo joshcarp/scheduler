@@ -106,25 +106,6 @@ datat *linkData (datat *d, datat *e)
     return d;
 }
 
-// /* searchData finds and prints when found searchQuery in position fieldNum of csv file' */
-// int searchData (datat *d, int fieldNum, FILE *outFile, char *searchQuery)
-// {
-//     dictKey_t attribute;
-//     int numComps = 0;
-
-//     while (d)
-//     {
-//         // get the field and compare to our searchQuery
-//         if (cmp (getField (d, fieldNum, attribute), searchQuery) == EQ)
-//         {
-//             printFAttr (d, outFile, attribute);
-//         }
-//         d = d->next;
-//         numComps++;
-//     }
-//     return numComps;
-// }
-
 /* fieldFromStr adds a new node to the bst by parsing the row and keeping track of the location within the file */
 void fieldFromStr (char *buff, char dest[MAXFIELDNUM][MAXFIELD])
 {
