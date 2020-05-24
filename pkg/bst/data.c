@@ -70,6 +70,7 @@ void freeData (datat *d)
 datat *blankData ()
 {
     datat *d = (datat *)malloc (sizeof (datat));
+    d->next = NULL;
     assert (d);
     return d;
 }
