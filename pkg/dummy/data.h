@@ -20,6 +20,7 @@ typedef struct datat{
 	int memsize;
 	int jobtime;
 	int location;
+	int remaining;
 	struct datat * next;
 }datat;
 

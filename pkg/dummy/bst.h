@@ -25,7 +25,6 @@ node_t *newNode(datat *);
 node_t *blankNode();
 void bstInsert(node_t *l, datat *);
 void freeTree(node_t *);
-void printNodes(datat *, FILE*);
 void parseKeys(node_t *, FILE*);
 node_t*  parseFile(FILE*);
 node_t*  fileToHead(FILE*, node_t *);

@@ -1,4 +1,4 @@
-all: format clean setup build-tests build-main build
+all: format clean setup build-main build
 
 .PHONY: build-main
 
