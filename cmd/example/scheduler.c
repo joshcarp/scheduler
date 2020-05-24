@@ -1,3 +1,4 @@
+#include "../../pkg/dummy/bst.h"
 #include <assert.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -35,6 +36,6 @@ int main (int argc, char **argv)
         }
     FILE *inFile = fopen (file, "r");
     assert (inFile);
-
+    node_t *head = parseFile (inFile, 0, 0);
     return 0;
 }

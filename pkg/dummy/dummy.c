@@ -7,7 +7,7 @@ as well as code for the randomising input*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+// (time-arrived, process-id, memory-size-req, job-time)
 int foo ()
 {
     return 69;
