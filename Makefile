@@ -24,6 +24,10 @@ UNITYFILES = $(wildcard vendor/unity/*.c)
 
 setup:
 	mkdir -p bin
+	cp tests/scenarios/processes.txt .
+	cp tests/scenarios/reordering.txt .
+	cp tests/scenarios/rr_memoryoverlap.txt .
+	cp tests/scenarios/timejumps.txt .
 
 ## build-tests: Builds the test binaries
 build-tests: $(SRCS) $(UNITYFILES) $(TESTS)
@@ -40,9 +44,14 @@ build:
 clean:
 	rm -rf bin/* || true
 	rm -rf scheduler || true
+	rm processes.txt || true 
+	rm reordering.txt || true 
+	rm rr_memoryoverlap.txt || true 
+	rm timejumps.txt || true 
 
 ## test:        Runs the test runner in scripts
-test: 
+test: setup run clean
+run:
 	./scripts/test.sh
 
 ## valgrind:    Runs the valgrind runner in scripts

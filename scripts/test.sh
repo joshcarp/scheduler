@@ -1,30 +1,31 @@
 #!/bin/bash
 
-SCRIPT_COUNT=$(find -name "*.sh"  | wc -l)
-if [ $SCRIPT_COUNT -gt 0 ]; then
-    echo -e "Found $SCRIPT_COUNT scripts. Excellent! Removing executable flags\n"
-    find -name "*.sh"  -exec chmod -x {} \;
-fi
+# SCRIPT_COUNT=$(find -name "*.sh"  | wc -l)
+# if [ $SCRIPT_COUNT -gt 0 ]; then
+#     echo -e "Found $SCRIPT_COUNT scripts. Excellent! Removing executable flags\n"
+#     find -name "*.sh"  -exec chmod -x {} \;
+# fi
 
-DIRTY_COUNT=$(find . -regex '.*\.\(o|so|a\)' | wc -l)
-EXE_COUNT=$(find .  -type f | wc -l)
+# DIRTY_COUNT=$(find . -regex '.*\.\(o|so|a\)' | wc -l)
+# EXE_COUNT=$(find .  -type f | wc -l)
 
-if [ $DIRTY_COUNT -gt 0 ]; then
-    echo "$DIRTY_COUNT dirty files found. Please do not commit object files"
-    echo "Dirty files are:"
-    find . -regex '.*\.\(o|so|a\)'
-    echo -e "-----------------------------------\n"
-fi
+# if [ $DIRTY_COUNT -gt 0 ]; then
+#     echo "$DIRTY_COUNT dirty files found. Please do not commit object files"
+#     echo "Dirty files are:"
+#     find . -regex '.*\.\(o|so|a\)'
+#     echo -e "-----------------------------------\n"
+# fi
 
-if [ $EXE_COUNT -gt 0 ]; then
-    echo "$EXE_COUNT executable files found. Please do not commit executables"
-    echo "Executable files are:"
-    find .  -type f
-    echo -e "-----------------------------------\n"
-fi
+# if [ $EXE_COUNT -gt 0 ]; then
+#     echo "$EXE_COUNT executable files found. Please do not commit executables"
+#     echo "Executable files are:"
+#     find .  -type f
+#     echo -e "-----------------------------------\n"
+# fi
 
 echo "running make"
 make
+
 
 if [ -f ./scheduler ]; then
     echo "OK -- ./scheduler found"
@@ -142,7 +143,6 @@ if [ -f benchmark-cm.txt ]; then
 else
     echo "benchmark-cm.txt not found, skipping benchmark-cm"
 fi
-
 
 if [ $FAIL -gt 0 ]; then
     exit 1
