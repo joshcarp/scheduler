@@ -1,29 +1,29 @@
 #!/bin/bash
-cp -r .git/ /p2
-cd /p2
+# cp -r .git/ /p2
+# cd /p2
 
-git reset --hard
-# git clean -fd
-# git clean -fX
+# git reset --hard
+# # git clean -fd
+# # git clean -fX
 
-git tag -l | grep "submission"
-if [ ${PIPESTATUS[1]} -eq 0 ]; then
-    git checkout submission
-else
-    echo "no submission tag, please make sure you tag your submission commit before the deadline"
-fi
+# git tag -l | grep "submission"
+# if [ ${PIPESTATUS[1]} -eq 0 ]; then
+#     git checkout submission
+# else
+#     echo "no submission tag, please make sure you tag your submission commit before the deadline"
+# fi
 
-git log --pretty=oneline --abbrev-commit
+# git log --pretty=oneline --abbrev-commit
 echo ""
 
-SCRIPT_COUNT=$(find -name "*.sh" -executable | wc -l)
+SCRIPT_COUNT=$(find -name "*.sh"  | wc -l)
 if [ $SCRIPT_COUNT -gt 0 ]; then
     echo -e "Found $SCRIPT_COUNT scripts. Excellent! Removing executable flags\n"
-    find -name "*.sh" -executable -exec chmod -x {} \;
+    find -name "*.sh"  -exec chmod -x {} \;
 fi
 
 DIRTY_COUNT=$(find . -regex '.*\.\(o|so|a\)' | wc -l)
-EXE_COUNT=$(find . -executable -type f | wc -l)
+EXE_COUNT=$(find .  -type f | wc -l)
 
 if [ $DIRTY_COUNT -gt 0 ]; then
     echo "$DIRTY_COUNT dirty files found. Please do not commit object files"
@@ -35,12 +35,12 @@ fi
 if [ $EXE_COUNT -gt 0 ]; then
     echo "$EXE_COUNT executable files found. Please do not commit executables"
     echo "Executable files are:"
-    find . -executable -type f
+    find .  -type f
     echo -e "-----------------------------------\n"
 fi
 
 find . -regex '.*\.\(o|so|a\)' -exec rm -f {} \;
-find . -executable -type f -exec rm -f {} \;
+find .  -type f -exec rm -f {} \;
 
 echo "running make clean"
 make clean
@@ -179,9 +179,9 @@ else
     fi
 fi
 
-git reset --hard &> /dev/null
-git clean -fd  &> /dev/null
-git clean -fX  &> /dev/null
+# git reset --hard &> /dev/null
+# git clean -fd  &> /dev/null
+# git clean -fX  &> /dev/null
 
 if [ $FAIL -gt 0 ]; then
     exit 1
