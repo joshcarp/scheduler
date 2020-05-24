@@ -1,4 +1,4 @@
-#include "../../pkg/scheduler/scheduler.h"
+#include "../../pkg/schedule/scheduler.h"
 #ifndef BST_H
 #define BST_H
 
