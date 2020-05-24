@@ -1,4 +1,4 @@
-all: setup build-tests build-main test
+all: clean setup build-tests build-main build test
 
 .PHONY: build-main
 
@@ -33,9 +33,13 @@ build-tests: $(SRCS) $(UNITYFILES) $(TESTS)
 build-main: $(SRCS) $(MAINTARGETS)
 	$(foreach file, $(MAINTARGETS), $(shell gcc  -g -Wall $(file) $(SRCS) -fsanitize=address -o bin$(patsubst %.c,/%.o,$(notdir  $(file)))))
 
+build:
+	mv bin/scheduler.o scheduler
+
 ## clean:       Removes all files in bin/
 clean:
-	rm -rf bin/*
+	rm -rf bin/* || true
+	rm -rf scheduler || true
 
 ## test:        Runs the test runner in scripts
 test: 
