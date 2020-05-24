@@ -20,6 +20,10 @@ test:
         - cat /tests/cases/testcase8.out
         - cat /tests/cases/testcase9.in
         - cat /tests/cases/testcase9.out
+        - cat /tests/cases/testcase10.in
+        - cat /tests/cases/testcase10.out
+        - cat /tests/cases/testcase11.in
+        - cat /tests/cases/testcase11.out
 
 variables:
     GIT_STRATEGY: clone
