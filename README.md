@@ -174,14 +174,13 @@ Your program must be calledschedulerand take the following command line argument
 can be passed in any order but you can assume that they will be passed exactly once and optional
 parameter-qat most once.
 
--ffilenamewill specify the name of the file describing the processes.
--ascheduling-algorithmwherescheduling algorithmis one of {ff,rr,cs} wherecsis the third schedul-
+-f filename will specify the name of the file describing the processes.
+-a scheduling-algorithm where scheduling algorithmis one of {ff,rr,cs} wherecsis the third schedul-
 ing algorithm that you will choose to implement.
--mmemory-allocationwherememory-allocationis one of {u,p,v,cm} whereuindicates unlimited mem-
-ory andcmis the process/memory replacement algorithm that you will implement.
--smemory-size wherememory-sizeis an integer indicating the size of memory in KB. This option
+-m memory-allocationwherememory-allocationis one of {u,p,v,cm} whereuindicates unlimited memory andcmis the process/memory replacement algorithm that you will implement.
+-s memory-size wherememory-sizeis an integer indicating the size of memory in KB. This option
 can be ignored in the case of unlimited memory, i.e., when-m u.
--qquantum wherequantumis an integer (in seconds). The parameter will be used only for round-robin
+-q quantum wherequantumis an integer (in seconds). The parameter will be used only for round-robin
 scheduling algorithm with the default value set to 10 seconds.
 
 

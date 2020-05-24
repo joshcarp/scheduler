@@ -1,4 +1,4 @@
-all: clean setup build-tests build-main build
+all: format clean setup build-tests build-main build
 
 .PHONY: build-main
 
@@ -69,3 +69,8 @@ copy:
 	# scp -i $(PRIVATEKEY) -r  $(SERVER):~/web3.comp30023 .
 	scp -i $(PRIVATEKEY) -r  $(SERVER):~/error.txt .
 	# scp username@remote:/file/to/send /where/to/put
+
+## format:  formats code with clang-format
+format: $(SRCS) $(MAINTARGETS)
+	clang-format -i $(foreach file, $(MAINTARGETS), $(file)) || true
+	clang-format -i $(foreach file, $(SRCS), $(file)) || true
