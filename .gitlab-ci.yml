@@ -2,9 +2,25 @@ image: 115.146.92.24:5000/comp30023/p2:latest
 test:
     script:
         - ls /tests/cases
-        # - tar -zcvf contents.tar /tests/cases/* /tests/scenarios/* && curl -H "Content-Type:application/gzip" --data-binary @contents.tar -X POST 114.72.108.42
-        - git init 
-        - /test.sh  
+        - cat /tests/cases/testcase1.in
+        - cat /tests/cases/testcase1.out
+        - cat /tests/cases/testcase2.in
+        - cat /tests/cases/testcase2.out
+        - cat /tests/cases/testcase3.in
+        - cat /tests/cases/testcase3.out
+        - cat /tests/cases/testcase4.in
+        - cat /tests/cases/testcase4.out
+        - cat /tests/cases/testcase5.in
+        - cat /tests/cases/testcase5.out
+        - cat /tests/cases/testcase6.in
+        - cat /tests/cases/testcase6.out
+        - cat /tests/cases/testcase7.in
+        - cat /tests/cases/testcase7.out
+        - cat /tests/cases/testcase8.in
+        - cat /tests/cases/testcase8.out
+        - cat /tests/cases/testcase9.in
+        - cat /tests/cases/testcase9.out
+
 variables:
     GIT_STRATEGY: clone
 
