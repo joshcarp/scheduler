@@ -1,20 +1,4 @@
 #!/bin/bash
-# cp -r .git/ /p2
-# cd /p2
-
-# git reset --hard
-# # git clean -fd
-# # git clean -fX
-
-# git tag -l | grep "submission"
-# if [ ${PIPESTATUS[1]} -eq 0 ]; then
-#     git checkout submission
-# else
-#     echo "no submission tag, please make sure you tag your submission commit before the deadline"
-# fi
-
-# git log --pretty=oneline --abbrev-commit
-echo ""
 
 SCRIPT_COUNT=$(find -name "*.sh"  | wc -l)
 if [ $SCRIPT_COUNT -gt 0 ]; then
@@ -39,15 +23,6 @@ if [ $EXE_COUNT -gt 0 ]; then
     echo -e "-----------------------------------\n"
 fi
 
-find . -regex '.*\.\(o|so|a\)' -exec rm -f {} \;
-find .  -type f -exec rm -f {} \;
-
-echo "running make clean"
-make clean
-if [ $? -ne 0 ]; then
-    echo "make clean returned a non-zero status code"
-fi
-
 echo "running make"
 make
 
@@ -61,17 +36,16 @@ fi
 echo ""
 
 # execute against basic tests
-CASES_DIR="/tests/cases"
-SCENARIOS_DIR="/tests/scenarios"
+CASES_DIR="tests/cases"
+SCENARIOS_DIR="tests/scenarios"
 
-cp $SCENARIOS_DIR/*.txt /p2/
 
 FAIL=0
 
 i=1
 for f in $(ls ${CASES_DIR}/*.in); do
     echo "Test #${i} -- running $(cat ${CASES_DIR}/testcase${i}.in)"
-    timeout -v --preserve-status -k 5s 15s stdbuf -oL $(cat ${CASES_DIR}/testcase${i}.in) 2>/tmp/stderr >/tmp/stdout
+    $(cat ${CASES_DIR}/testcase${i}.in) 2>/tmp/stderr >/tmp/stdout
     EXIT_CODE=$?
     if [ $EXIT_CODE -ne 0 ]; then
         echo "Test #${i} WARNING: did not exit normally -- exit code: $EXIT_CODE"
@@ -107,7 +81,7 @@ done
 # run benchmark
 if [ -f benchmark-cs.txt ]; then
     echo "Running \`./scheduler -f benchmark-cs.txt -a rr -s 100 -m v -q 10\`"
-    timeout -v --preserve-status -k 5s 15s stdbuf -oL ./scheduler -f benchmark-cs.txt -a rr -s 100 -m v -q 10 2>/tmp/stderr >/tmp/stdout
+    ./scheduler -f benchmark-cs.txt -a rr -s 100 -m v -q 10 2>/tmp/stderr >/tmp/stdout
     echo "========== STDOUT ============"
     cat /tmp/stdout; rm /tmp/stdout
     echo "=============================="
@@ -116,7 +90,7 @@ if [ -f benchmark-cs.txt ]; then
     echo "------------------------------"
 
     echo "Running \`./scheduler -f benchmark-cs.txt -a ff -s 100 -m v\`"
-    timeout -v --preserve-status -k 5s 15s stdbuf -oL ./scheduler -f benchmark-cs.txt -a ff -s 100 -m v 2>/tmp/stderr >/tmp/stdout
+    ./scheduler -f benchmark-cs.txt -a ff -s 100 -m v 2>/tmp/stderr >/tmp/stdout
     echo "========== STDOUT ============"
     cat /tmp/stdout; rm /tmp/stdout
     echo "=============================="
@@ -125,7 +99,7 @@ if [ -f benchmark-cs.txt ]; then
     echo "------------------------------"
 
     echo "Running \`./scheduler -f benchmark-cs.txt -a cs -s 100 -m v\`"
-    timeout -v --preserve-status -k 5s 15s stdbuf -oL ./scheduler -f benchmark-cs.txt -a cs -s 100 -m v 2>/tmp/stderr >/tmp/stdout
+    ./scheduler -f benchmark-cs.txt -a cs -s 100 -m v 2>/tmp/stderr >/tmp/stdout
     echo "========== STDOUT ============"
     cat /tmp/stdout; rm /tmp/stdout
     echo "=============================="
@@ -139,7 +113,7 @@ fi
 
 if [ -f benchmark-cm.txt ]; then
     echo "Running \`./scheduler -f benchmark-cm.txt -a rr -s 100 -m v -q 10\`"
-    timeout -v --preserve-status -k 5s 15s stdbuf -oL ./scheduler -f benchmark-cm.txt -a rr -s 100 -m v -q 10 2>/tmp/stderr >/tmp/stdout
+    ./scheduler -f benchmark-cm.txt -a rr -s 100 -m v -q 10 2>/tmp/stderr >/tmp/stdout
     echo "========== STDOUT ============"
     cat /tmp/stdout; rm /tmp/stdout
     echo "=============================="
@@ -148,7 +122,7 @@ if [ -f benchmark-cm.txt ]; then
     echo "------------------------------"
 
     echo "Running \`./scheduler -f benchmark-cm.txt -a rr -s 100 -m p -q 10\`"
-    timeout -v --preserve-status -k 5s 15s stdbuf -oL ./scheduler -f benchmark-cm.txt -a rr -s 100 -m p -q 10 2>/tmp/stderr >/tmp/stdout
+    ./scheduler -f benchmark-cm.txt -a rr -s 100 -m p -q 10 2>/tmp/stderr >/tmp/stdout
     echo "========== STDOUT ============"
     cat /tmp/stdout; rm /tmp/stdout
     echo "=============================="
@@ -157,7 +131,7 @@ if [ -f benchmark-cm.txt ]; then
     echo "------------------------------"
 
     echo "Running \`./scheduler -f benchmark-cm.txt -a rr -s 100 -m cm -q 10\`"
-    timeout -v --preserve-status -k 5s 15s stdbuf -oL ./scheduler -f benchmark-cm.txt -a rr -s 100 -m cm -q 10 2>/tmp/stderr >/tmp/stdout
+    ./scheduler -f benchmark-cm.txt -a rr -s 100 -m cm -q 10 2>/tmp/stderr >/tmp/stdout
     echo "========== STDOUT ============"
     cat /tmp/stdout; rm /tmp/stdout
     echo "=============================="
@@ -169,19 +143,6 @@ else
     echo "benchmark-cm.txt not found, skipping benchmark-cm"
 fi
 
-# did student submit report?
-if [ ! -f report.txt ]; then
-    echo "report.txt not found, please remember to submit report.txt before deadline"
-else
-    if [ $(cat report.txt | wc -w) -gt 200 ]; then
-        echo "WARN: your report length is greater than 200 words, you will get **0 marks** for the report."
-        ((FAIL++))
-    fi
-fi
-
-# git reset --hard &> /dev/null
-# git clean -fd  &> /dev/null
-# git clean -fX  &> /dev/null
 
 if [ $FAIL -gt 0 ]; then
     exit 1

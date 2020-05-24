@@ -1,4 +1,4 @@
-all: clean setup build-tests build-main build test
+all: clean setup build-tests build-main build
 
 .PHONY: build-main
 
