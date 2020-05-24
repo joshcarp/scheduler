@@ -1,33 +1,7 @@
 image: 115.146.92.24:5000/comp30023/p2:latest
 test:
     script:
-        # - ls /tests/scenarios
-        # - cat /tests/cases/testcase1.in
-        # - cat /tests/cases/testcase1.out
-        # - cat /tests/cases/testcase2.in
-        # - cat /tests/cases/testcase2.out
-        # - cat /tests/cases/testcase3.in
-        # - cat /tests/cases/testcase3.out
-        # - cat /tests/cases/testcase4.in
-        # - cat /tests/cases/testcase4.out
-        # - cat /tests/cases/testcase5.in
-        # - cat /tests/cases/testcase5.out
-        # - cat /tests/cases/testcase6.in
-        # - cat /tests/cases/testcase6.out
-        # - cat /tests/cases/testcase7.in
-        # - cat /tests/cases/testcase7.out
-        # - cat /tests/cases/testcase8.in
-        # - cat /tests/cases/testcase8.out
-        # - cat /tests/cases/testcase9.in
-        # - cat /tests/cases/testcase9.out
-        # - cat /tests/cases/testcase10.in
-        # - cat /tests/cases/testcase10.out
-        # - cat /tests/cases/testcase11.in
-        # - cat /tests/cases/testcase11.out
-        - cat /tests/scenarios/processes.txt
-        - cat /tests/scenarios/reordering.txt
-        - cat /tests/scenarios/rr_memoryoverlap.txt
-        - cat /tests/scenarios/timejumps.txt
+        - scripts/test.sh
 
 variables:
     GIT_STRATEGY: clone
