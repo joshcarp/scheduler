@@ -36,6 +36,7 @@ int main (int argc, char **argv)
         }
     FILE *inFile = fopen (file, "r");
     assert (inFile);
-    node_t *head = parseFile (inFile, 0, 0);
+    node_t *head = parseFile (inFile);
+    printNodes (head->data, stdout);
     return 0;
 }

@@ -20,7 +20,7 @@ SRCS = $(filter-out %_test.c, $(wildcard $(SRC_DIR)/*/*.c))
 TESTTARGETS = $(patsubst $(TEST_DIR)/*/%.c,%,$(TESTS))
 MAINTARGETS = $(filter-out %_test.c, $(wildcard $(MAIN_DIR)/*/*.c))
 
-UNITYFILES = $(wildcard vendor/unity/*.c)
+# UNITYFILES = $(wildcard vendor/unity/*.c)
 
 setup:
 	mkdir -p bin
