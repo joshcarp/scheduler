@@ -80,15 +80,15 @@ void bstInsert (node_t *parent, datat *data)
 }
 
 /* parseFile parses a csv file into a bst. cmd is for command line arguments*/
-node_t *parseFile (FILE *file)
+datat *parseFile (FILE *file)
 {
     char buf[MAXBUFF];
     int currentloc = 0;
     int buffSize = 0;
     int rowcount = 0;
-    node_t *head = blankNode ();
+    datat *head = NULL;
     datat *d;
-
+    datat *next = NULL;
     // While stdin, keep cumulative sum of location from start of file and parse row into the bst
     while (fgets (buf, MAXBUFF, file) && buf[0] != '\n')
     {
@@ -102,17 +102,16 @@ node_t *parseFile (FILE *file)
         }
 
         d = newData (buf);
-        if (rowcount <= NUMSKIPPEDWROWS)
+        if (next == NULL)
         {
-            head->data = d;
-            rowcount++;
-            continue;
+            next = d;
+            head = d;
         }
-        // If the randomise flag isn't set, just directly add it
-        bstInsert (head, d);
-
-        rowcount++;
-        currentloc += buffSize;
+        else
+        {
+            next->llNext = d;
+            next = d;
+        }
     }
     return head;
 }

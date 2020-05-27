@@ -49,7 +49,7 @@ int main (int argc, char **argv)
         }
     FILE *inFile = fopen (file, "r");
     assert (inFile);
-    node_t *head = parseFile (inFile);
+    datat *head = parseFile (inFile);
     next (head, algorithm, quantum);
     return 0;
 }

@@ -130,16 +130,6 @@ void printFData (datat *d, FILE *outFile)
         printData (d);
         return;
     }
-    // fseek (d->file, d->location, SEEK_SET);
-    // char buf[512];
-    // fgets_noNL (buf, 1024, d->file);
-    // fprintf (outFile, "time: %s", d->key);
-    // char *field = strtok (buf, " ");
-    // fprintf (outFile, "procID: %s", field);
-    // field = strtok (NULL, " ");
-    // fprintf (outFile, "mem size: %s", field);
-    // field = strtok (NULL, " ");
-    // fprintf (outFile, "jobtime: %s", field);
     return;
 }
 

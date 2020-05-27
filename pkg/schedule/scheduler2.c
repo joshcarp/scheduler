@@ -17,17 +17,16 @@ int left (datat *head)
     return count;
 }
 
-int next (node_t *head, enum scheduler type, int quantum)
+int next (datat *head, enum scheduler type, int quantum)
 {
-    datat *this = toList (head);
+
     int time = 0;
-    int remaining = left (this);
+    int remaining = left (head);
     // queue *q = NewQueue ();
     do
     {
-
-        time = next_helper (this, type, quantum, time);
-        remaining = left (this);
+        time = next_helper (head, type, quantum, time);
+        remaining = left (head);
     } while (remaining);
     return 0;
 }

@@ -15,7 +15,7 @@ enum scheduler {
     round_robin = 1,
 } scheduler;
 
-int next(node_t *head, enum scheduler type, int quantum);
+int next(datat *head, enum scheduler type, int quantum);
 
 int apply_quantum (datat *head, datat *next, int quantum, int time);
 
