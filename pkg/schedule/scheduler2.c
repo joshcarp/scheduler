@@ -66,7 +66,28 @@ int next_helper (datat *head, enum scheduler type, int quantum, int time)
     }
     return time;
 }
+ //memory management here
+        // time = assignmemory(next, memory, time)
+        // func  assignmemory{
+        //     for p = pages in next.memory{
+        //         if p .allocated == no{
+        //            time = memoryallocate(memory, p, time)
+        //         }
+        //     }
+        // }
+int memoryallocate(mem memory, page *p, int time){
 
+}
+int assign_memory(mem memory, datat *head, datat *next, int quantum, int time){
+    for (int i = 0; i < head->memsize; i++){
+        page *p = head->memory[i];
+        if(p->allocated == 0){
+            time = memoryallocate(memory, p, time)
+        }
+
+
+    }
+}
 
 int apply_quantum (datat *head, datat *next, int quantum, int time)
 {

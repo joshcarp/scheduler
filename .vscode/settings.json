@@ -29,6 +29,8 @@
         "vector": "c",
         "algorithm": "c",
         "memory_resource": "c",
-        "__split_buffer": "c"
+        "__split_buffer": "c",
+        "__cxx_version": "c",
+        "memory": "c"
     }
 }

@@ -13,39 +13,53 @@ typedef int dictKey_t;
 /* datat is a linked list and has a key, and a 'location', which is the
 amount of bytes of data from the start of the input file. When needing to print this value will 
 be used to offset the start of the file (ie pointer arithmetic for files)*/
-typedef struct datat{
+typedef struct process{
 	int key;
 	int arrival;
 	int procid;
 	int memsize;
 	int jobtime;
 	int remaining;
-	struct datat * llNext;
-	struct datat * queueNext;
-}datat;
+	struct process * llNext;
+	struct process * queueNext;
+	page **memory;
+	int memsize;
+	int last_execution_time;
+}process;
+typedef struct page{
+	process* parent;
+	int last_used;
+	int finished;
+	int allocated;
+	int id;
+}page;
 
+typedef struct mem{
+	page **memory;
+	int len;
+}mem;
 typedef struct queue{
-	struct datat *front, *rear;
+	struct process *front, *rear;
 }queue;
 
 dictKey_t *NewKey();
-datat *newData (char *entry);
-datat *blankData();
+process *newData (char *entry);
+process *blankData();
 int cmp(int, int);
-void printData(datat*);
+void printData(process*);
 void printKey(dictKey_t);
-void printFData(datat*, FILE*);
-void printFAttr(datat *d, FILE* outFile, char* Attr);
+void printFData(process*, FILE*);
+void printFAttr(process *d, FILE* outFile, char* Attr);
 // char* getField(datat *d, int fieldNum, char* dest);
 void fieldFromStr(char *row, char dest[MAXFIELDNUM][MAXFIELD]);
-datat* linkData(datat*, datat*);
-int searchData(datat *,int, FILE*, char *);
-void freeData(datat*);
+process* linkData(process*, process*);
+int searchData(process *,int, FILE*, char *);
+void freeData(process*);
 // char *fgets_noNL(char *, int, FILE *);
 
 
 queue *NewQueue ();
 
-void addToQueue (queue *q, datat *d);
+void addToQueue (queue *q, process *d);
 
-datat* getFromQueue (queue *q);
+process* getFromQueue (queue *q);
