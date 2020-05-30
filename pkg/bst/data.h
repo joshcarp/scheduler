@@ -23,15 +23,14 @@ typedef struct process{
 	struct process * llNext;
 	struct process * queueNext;
 	page **memory;
-	int memsize;
+	int memunits;
 	int last_execution_time;
 }process;
 typedef struct page{
 	process* parent;
-	int last_used;
-	int finished;
 	int allocated;
 	int id;
+	int size;
 }page;
 
 typedef struct mem{

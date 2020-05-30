@@ -31,6 +31,12 @@
         "memory_resource": "c",
         "__split_buffer": "c",
         "__cxx_version": "c",
-        "memory": "c"
+        "memory": "c",
+        "bitset": "c",
+        "cstdio": "c",
+        "initializer_list": "c",
+        "istream": "c",
+        "new": "c",
+        "utility": "c"
     }
 }

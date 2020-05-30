@@ -1,14 +1,14 @@
 
 #include "scheduler.h"
 
-int left (datat *head)
+int left (process *head)
 {
     if (head == NULL)
     {
         return 0;
     }
     int count = 0;
-    datat *data = head;
+    process *data = head;
     while (data)
     {
         count += data->remaining != 0;
@@ -17,7 +17,7 @@ int left (datat *head)
     return count;
 }
 
-int next (datat *head, enum scheduler type, int quantum)
+int next (process *head, enum scheduler type, int quantum)
 {
     int time = 0;
     int remaining = left (head);
@@ -30,7 +30,7 @@ int next (datat *head, enum scheduler type, int quantum)
 }
 
 
-int next_helper (datat *head, enum scheduler type, int quantum, int time)
+int next_helper (process *head, enum scheduler type, int quantum, int time)
 {
     queue *q = NewQueue ();
     int remaining = left (head);
@@ -38,8 +38,8 @@ int next_helper (datat *head, enum scheduler type, int quantum, int time)
     {
         return time;
     }
-    datat *next = NULL;
-    datat *data = head;
+    process *next = NULL;
+    process *data = head;
     while (remaining != 0)
     {
         while (data)
@@ -59,6 +59,8 @@ int next_helper (datat *head, enum scheduler type, int quantum, int time)
             addToQueue (q, next);
         }
         next = getFromQueue (q);
+
+        time = assign_memory(memory, q, next, quantum, time);
         time = apply_quantum (head, next, quantum, time);
 
 
@@ -66,30 +68,47 @@ int next_helper (datat *head, enum scheduler type, int quantum, int time)
     }
     return time;
 }
- //memory management here
-        // time = assignmemory(next, memory, time)
-        // func  assignmemory{
-        //     for p = pages in next.memory{
-        //         if p .allocated == no{
-        //            time = memoryallocate(memory, p, time)
-        //         }
-        //     }
-        // }
-int memoryallocate(mem memory, page *p, int time){
 
-}
-int assign_memory(mem memory, datat *head, datat *next, int quantum, int time){
-    for (int i = 0; i < head->memsize; i++){
-        page *p = head->memory[i];
-        if(p->allocated == 0){
-            time = memoryallocate(memory, p, time)
+int memoryallocate (mem memory, queue *q, page *p, int time)
+{
+    // for (q->rear->memsize)
+    process *oldest = q->rear;
+    int remainingsize = p->size;
+    int pageid = -1;
+    // TODO: assign memory, 
+    while (remainingsize > 0)
+    {
+        for (int i = 0; i < oldest->memunits && remainingsize > 0; i++)
+        {
+            if (oldest->memory[i]->allocated)
+            {
+                if (pageid == -1){
+                    pageid = oldest->memory[i]->id;
+                }
+                oldest->memory[i]->allocated = 0;
+                remainingsize -= oldest->memory[i]->size;
+            }
         }
-
-
     }
+    p->id = pageid;
+    return time;
 }
 
-int apply_quantum (datat *head, datat *next, int quantum, int time)
+// assign_memory assigns memory to a process
+int assign_memory (mem memory, queue *q, process *next, int quantum, int time)
+{
+    for (int i = 0; i < next->memsize; i++)
+    {
+        page *p = next->memory[i];
+        if (p->allocated == 0)
+        {
+            time = memoryallocate (memory,q, p, time);
+        }
+    }
+    return time;
+}
+
+int apply_quantum (process *head, process *next, int quantum, int time)
 {
     if (next->remaining == 0)
     {
