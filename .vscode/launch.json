@@ -11,11 +11,12 @@
             "request": "launch",
             // "program": "${workspaceRoot}/bin/datatest",
             "program": "${workspaceRoot}/scheduler",
-            "args": [ "-f", "tests/scenarios/rr_memoryoverlap.txt","-a",  "ff", "-s", "20", "-m", "p"],
+            "args": [ "-f", "tests/scenarios/processes.txt", "-a", "ff", "-m", "u"],
             "cwd": "${workspaceFolder}",
             "MIMode": "lldb",
             // "externalConsole": true,
             // ./scheduler -f tests/scenarios/rr_memoryoverlap.txt -a ff -s 20 -m p
+            // ./scheduler -f tests/scenarios/processes.txt -a ff -m u
         
     }
     ]
