@@ -10,23 +10,33 @@ jobs:
       run: make
     - name: One
       run: ./scripts/test_singular.sh 1
+      if: succeeded() || failed()
     - name: Two
       run: ./scripts/test_singular.sh 2
+      if: succeeded() || failed()
     - name: Three
       run: ./scripts/test_singular.sh 3
+      if: succeeded() || failed()
     - name: Four
       run: ./scripts/test_singular.sh 4
+      if: succeeded() || failed()
     - name: Five
       run: ./scripts/test_singular.sh 5
+      if: succeeded() || failed()
     - name: Six
       run: ./scripts/test_singular.sh 6
+      if: succeeded() || failed()
     - name: Seven
       run: ./scripts/test_singular.sh 7
+      if: succeeded() || failed()
     - name: Eight
       run: ./scripts/test_singular.sh 8
+      if: succeeded() || failed()
     - name: Nine
       run: ./scripts/test_singular.sh 9
+      if: succeeded() || failed()
     - name: Ten
       run: ./scripts/test_singular.sh 10
+      if: succeeded() || failed()
     - name: Eleven
       run: ./scripts/test_singular.sh 11

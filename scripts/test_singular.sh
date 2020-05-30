@@ -29,6 +29,7 @@ if [ $? -ne 0 ]; then
     echo "---------- STDERR ------------"
     cat /tmp/stderr; rm /tmp/stderr
     echo -e "------------------------------\n"
+    exit 1
 else
     echo -e "Test #${i} PASSED\n"
 fi
