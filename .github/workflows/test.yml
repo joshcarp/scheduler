@@ -8,3 +8,25 @@ jobs:
     - uses: actions/checkout@v1
     - name: Make
       run: make
+    - name: One
+      run: ./scripts/test_singular 1
+    - name: Two
+      run: ./scripts/test_singular 2
+    - name: Three
+      run: ./scripts/test_singular 3
+    - name: Four
+      run: ./scripts/test_singular 4
+    - name: Five
+      run: ./scripts/test_singular 5
+    - name: Six
+      run: ./scripts/test_singular 6
+    - name: Seven
+      run: ./scripts/test_singular 7
+    - name: Eight
+      run: ./scripts/test_singular 8
+    - name: Nine
+      run: ./scripts/test_singular 9
+    - name: Ten
+      run: ./scripts/test_singular 10
+    - name: Eleven
+      run: ./scripts/test_singular 11
