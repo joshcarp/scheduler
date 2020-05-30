@@ -1,7 +1,6 @@
 
 #include "scheduler.h"
 #include <assert.h>
-#include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
@@ -23,7 +22,15 @@ int left (datat *head)
     }
     return count;
 }
-
+int ceiling (float x)
+{
+    float rem = x - (int)x;
+    if (rem > 0.5)
+    {
+        return 1 + x;
+    }
+    return x;
+}
 int next (datat *head, enum scheduler type, int quantum, int memory_size, enum memory_algorithm malgo, enum scheduler schedule)
 {
     int time = 0;
@@ -38,7 +45,7 @@ int next (datat *head, enum scheduler type, int quantum, int memory_size, enum m
 
 void printStats (datat *head, int time)
 {
-    int intervals = ceilf (((float)time / 60));
+    int intervals = ceiling (((float)time / 60));
     int *throughput = (int *)calloc (intervals, sizeof (int) * (intervals));
     int total_turnaroundtime = 0;
     float time_overhead_max = 0;
@@ -74,7 +81,7 @@ void printStats (datat *head, int time)
             min_throughput = throughput[i];
         }
     }
-    printf ("Throughput %.f %d %d\n", ceilf (ave_throughput), min_throughput, max_throughput);
+    printf ("Throughput %d %d %d\n", ceiling (ave_throughput), min_throughput, max_throughput);
     printf ("Turnaround time %d\n", total_turnaroundtime / num);
     printf ("Time overhead %.2f, %.2f\n", time_overhead_max, time_overhead_total / num);
     printf ("Makespan %d\n", time);
