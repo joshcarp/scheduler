@@ -1,1 +1,1 @@
-./scheduler -f timejumps.txt -a rr -s 100 -m v -q 10
+./scheduler -f tests/scenarios/timejumps.txt -a rr -s 100 -m v -q 10

@@ -24,10 +24,10 @@ MAINTARGETS = $(filter-out %_test.c, $(wildcard $(MAIN_DIR)/*/*.c))
 
 setup:
 	mkdir -p bin
-	cp tests/scenarios/processes.txt .
-	cp tests/scenarios/reordering.txt .
-	cp tests/scenarios/rr_memoryoverlap.txt .
-	cp tests/scenarios/timejumps.txt .
+	# cp tests/scenarios/processes.txt .
+	# cp tests/scenarios/reordering.txt .
+	# cp tests/scenarios/rr_memoryoverlap.txt .
+	# cp tests/scenarios/timejumps.txt .
 
 ## build-tests: Builds the test binaries
 build-tests: $(SRCS) $(UNITYFILES) $(TESTS)

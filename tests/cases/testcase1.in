@@ -1,1 +1,1 @@
-./scheduler -f processes.txt -a ff -m u
+./scheduler -f tests/scenarios/processes.txt -a ff -m u

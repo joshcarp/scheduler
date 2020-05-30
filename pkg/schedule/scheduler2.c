@@ -19,10 +19,8 @@ int left (datat *head)
 
 int next (datat *head, enum scheduler type, int quantum)
 {
-
     int time = 0;
     int remaining = left (head);
-    // queue *q = NewQueue ();
     do
     {
         time = next_helper (head, type, quantum, time);
