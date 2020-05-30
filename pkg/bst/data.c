@@ -43,6 +43,7 @@ datat *newData (char *entry)
     fieldFromStr (entry, fields);
     datat *d = blankData ();
     d->llNext = NULL;
+    d->queueNext = NULL;
     // strncpy (d->key, key, 20);
 
     d->key = atoi (fields[0]);
