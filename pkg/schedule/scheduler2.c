@@ -1,6 +1,7 @@
 
 #include "scheduler.h"
 #include <assert.h>
+#include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
@@ -37,7 +38,7 @@ int next (datat *head, enum scheduler type, int quantum, int memory_size, enum m
 
 void printStats (datat *head, int time)
 {
-    int intervals = time / 60 + 1;
+    int intervals = ceilf (((float)time / 60));
     int *throughput = (int *)calloc (intervals, sizeof (int) * (intervals));
     int total_turnaroundtime = 0;
     float time_overhead_max = 0;
@@ -58,12 +59,22 @@ void printStats (datat *head, int time)
         num++;
         next = next->llNext;
     }
-    printf ("Throughput ");
+
+    int max_throughput = -1;
+    int min_throughput = -1;
+    float ave_throughput = (float)num / intervals;
     for (int i = 0; i < intervals; i++)
     {
-        printf ("%d ", throughput[i]);
+        if (throughput[i] > max_throughput || max_throughput == -1)
+        {
+            max_throughput = throughput[i];
+        }
+        else if (throughput[i] < min_throughput || min_throughput == -1)
+        {
+            min_throughput = throughput[i];
+        }
     }
-    printf ("\n");
+    printf ("Throughput %.f %d %d\n", ceilf (ave_throughput), min_throughput, max_throughput);
     printf ("Turnaround time %d\n", total_turnaroundtime / num);
     printf ("Time overhead %.2f, %.2f\n", time_overhead_max, time_overhead_total / num);
     printf ("Makespan %d\n", time);
@@ -256,7 +267,7 @@ int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time,
     }
     if (next->loadtime != 0)
     {
-        printf ("%d, RUNNING, id=%d, remaining-time=%d, load-time=%d, mem-usage=%d%%,", time,
+        printf ("%d, RUNNING, id=%d, remaining-time=%d, load-time=%d, mem-usage=%d%%, ", time,
                 next->procid, next->remaining, next->loadtime, (memory->cap / memory->len) * 100);
         printAddresses (next->memory, next->memunits);
         printf ("\n");
