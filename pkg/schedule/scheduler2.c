@@ -23,19 +23,19 @@ int left (datat *head)
     return count;
 }
 
-int next (datat *head, enum scheduler type, int quantum)
+int next (datat *head, enum scheduler type, int quantum, int memory_size)
 {
     int time = 0;
     int remaining = left (head);
     do
     {
-        time = next_helper (head, type, quantum, time);
+        time = next_helper (head, type, quantum, time, memory_size);
         remaining = left (head);
     } while (remaining);
     return 0;
 }
 
-int next_helper (datat *head, enum scheduler type, int quantum, int time)
+int next_helper (datat *head, enum scheduler type, int quantum, int time, int memory_size)
 {
     queue *q = NewQueue ();
     int remaining = left (head);
@@ -46,9 +46,12 @@ int next_helper (datat *head, enum scheduler type, int quantum, int time)
     datat *next = NULL;
     datat *data = head;
     mem memory;
-    memory.len = TOTALMEM / MEMLEN;
+    memory.len = memory_size / MEMLEN;
     memory.memory = (page **)calloc (memory.len, sizeof (page *));
     assert (memory.memory);
+    memory.recently_evicted = (int *)calloc (memory.len, sizeof (int) * memory.len);
+    assert (memory.recently_evicted);
+    memory.num_recently_evicted = 0;
     while (remaining != 0)
     {
         while (data)
@@ -68,81 +71,136 @@ int next_helper (datat *head, enum scheduler type, int quantum, int time)
             addToQueue (q, next);
         }
         next = getFromQueue (q);
+        if (next != NULL)
+        {
+            time = assign_memory (&memory, q, next, quantum, time);
+            time = apply_quantum (&memory, head, next, quantum, time);
 
-        time = assign_memory (memory, q, next, quantum, time);
-        time = apply_quantum (head, next, quantum, time);
 
-
-        remaining = left (head);
+            remaining = left (head);
+        }
     }
     return time;
 }
 
-int memoryallocate (mem memory, queue *q, page *p, int time)
+bool memoryallocate (mem *memory, queue *q, page *p)
 {
-    // for (q->rear->memsize)
     int pageid = -1;
-    // TODO: assign memory,
-    for (int i = 0; i < memory.len; i++)
+    for (int i = 0; i < memory->len; i++)
     {
-        if (memory.memory[i] == NULL)
+        if (memory->memory[i] == NULL)
         {
-            memory.memory[i] = p;
+            memory->memory[i] = p;
+            memory->cap++;
             p->allocated = true;
             if (pageid == -1)
             {
                 p->id = i;
             }
-            return time;
+            return true;
         }
     }
-    datat *oldest = q->front->queueNext; // the front of the queue is this process, so the one following is the last executed.
-    bool cont = true;
-    do
-    {
-
-        for (int i = 0; i < oldest->memunits; i++)
-        {
-            if (MEMALGO == 0)
-            {
-                if (oldest->memory[i]->allocated)
-                {
-                    cont = false;
-                    memory.memory[oldest->memory[i]->id] = NULL;
-                    oldest->memory[i]->allocated = false;
-                }
-            }
-            else
-            {
-                if (oldest->memory[i]->allocated)
-                {
-                    oldest->memory[i]->allocated = false;
-                    p->id = oldest->memory[i]->id;
-                    memory.memory[p->id] = p;
-                    return time;
-                }
-            }
-        }
-        oldest = oldest->queueNext;
-    } while (cont && oldest != NULL);
-    return memoryallocate (memory, q, p, time);
+    return false;
 }
 
-// assign_memory assigns memory to a process
-int assign_memory (mem memory, queue *q, datat *next, int quantum, int time)
+bool evict_page (mem *memory, page *next)
 {
+    if (next->allocated)
+    {
+        memory->memory[next->id] = NULL;
+        next->allocated = false;
+        memory->recently_evicted[memory->num_recently_evicted++] = next->id;
+        memory->cap--;
+        return true;
+    }
+    return false;
+}
+
+bool evict_process (mem *memory, datat *next)
+{
+    bool success = false;
     for (int i = 0; i < next->memunits; i++)
+    {
+        if (next->memory[i]->allocated)
+        {
+            success = evict_page (memory, next->memory[i]);
+        }
+    }
+    return success;
+}
+
+
+int *getIds (datat *next)
+{
+    int *ids = (int *)calloc (next->memunits, sizeof (int) * next->memunits);
+    for (int i = 0; i < next->memunits; i++)
+    {
+        ids[i] = next->memory[i]->id;
+    }
+    return ids;
+}
+// assign_memory assigns memory to a process
+int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time)
+{
+    int needed_pages = next->memunits;
+
+    for (int i = 0; i < needed_pages; i++)
     {
         page *p = next->memory[i];
         if (p->allocated == false)
         {
-            time = memoryallocate (memory, q, p, time);
+            if (memoryallocate (memory, q, p)) // attempt to assign without evicting processes
+            {
+                time += 2;
+                continue;
+            }
+            datat *oldest = q->front; // the front of the queue is this process, so the one following is the last executed.
+            bool searching = true;
+            do
+            {
+                if (MEMALGO == 0) // swapping
+                {
+                    if (evict_process (memory, oldest))
+                    {
+                        needed_pages -= oldest->memunits;
+                        searching = false;
+                    }
+                }
+                else // virtual
+                {
+                    for (int i = 0; i < oldest->memunits && needed_pages > 0; i++)
+                    {
+                        if (evict_page (memory, oldest->memory[i]))
+                        {
+                            searching = false;
+                            needed_pages--;
+                        }
+                    }
+                }
+                oldest = oldest->queueNext;
+            } while (searching && oldest != NULL);
+            assert (memoryallocate (memory, q, p));
+            time += 2;
         }
+    }
+    if (memory->num_recently_evicted > 0)
+    {
+        printf ("%d, EVICTED, mem-addresses=[", time);
+        for (int i = 0; i < memory->num_recently_evicted; i++)
+        {
+            printf ("%d", memory->recently_evicted[i]);
+            if (i != memory->num_recently_evicted - 1)
+            {
+                printf (", ");
+            }
+        }
+        memory->num_recently_evicted = 0;
+        printf ("]\n");
     }
     return time;
 }
 
-int apply_quantum (datat *head, datat *next, int quantum, int time)
+int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time)
 {
     if (next->remaining == 0)
     {
@@ -170,6 +228,7 @@ int apply_quantum (datat *head, datat *next, int quantum, int time)
         time += quantum - next->remaining;
         next->remaining = 0;
     }
+    evict_process (memory, next);
     printf ("%d, FINISHED, id=%d, proc-remaining=%d\n", time, next->procid, left (head));
     return time;
 }

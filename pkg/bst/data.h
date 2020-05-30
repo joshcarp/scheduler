@@ -44,6 +44,9 @@ struct page{
 
 struct mem{
 	page **memory;
+	int *recently_evicted;
+	int num_recently_evicted;
+	int cap;
 	int len;
 };
 

@@ -184,6 +184,7 @@ void addToQueue (queue *q, datat *d)
 
     // Add the new node at the end of queue and change rear
     q->rear->queueNext = temp;
+    temp->queuePrev = q->rear->queueNext;
     q->rear = temp;
 }
 
@@ -195,10 +196,15 @@ datat *getFromQueue (queue *q)
     }
 
     datat *temp = q->front;
-
     q->front = q->front->queueNext;
-
-    if (q->front == NULL) q->rear = NULL;
+    if (q->front != NULL)
+    {
+        q->front->queuePrev = NULL;
+    }
+    else
+    {
+        q->rear = NULL;
+    }
 
     return temp;
 }
