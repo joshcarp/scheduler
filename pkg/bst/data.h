@@ -22,6 +22,7 @@ struct datat{
 	int procid;
 	int memsize;
 	int jobtime;
+	int loadtime;
 	int remaining;
 	struct datat *llNext;
 	struct datat *queueNext;
@@ -44,7 +45,7 @@ struct page{
 
 struct mem{
 	page **memory;
-	int *recently_evicted;
+	page **recently_evicted;
 	int num_recently_evicted;
 	int cap;
 	int len;

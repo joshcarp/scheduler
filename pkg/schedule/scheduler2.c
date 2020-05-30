@@ -23,19 +23,19 @@ int left (datat *head)
     return count;
 }
 
-int next (datat *head, enum scheduler type, int quantum, int memory_size)
+int next (datat *head, enum scheduler type, int quantum, int memory_size, enum memory_algorithm malgo, enum scheduler schedule)
 {
     int time = 0;
     int remaining = left (head);
     do
     {
-        time = next_helper (head, type, quantum, time, memory_size);
+        time = next_helper (head, type, quantum, memory_size, time, malgo, schedule);
         remaining = left (head);
     } while (remaining);
     return 0;
 }
 
-int next_helper (datat *head, enum scheduler type, int quantum, int time, int memory_size)
+int next_helper (datat *head, enum scheduler type, int quantum, int memory_size, int time, enum memory_algorithm malgo, enum scheduler schedule)
 {
     queue *q = NewQueue ();
     int remaining = left (head);
@@ -49,7 +49,7 @@ int next_helper (datat *head, enum scheduler type, int quantum, int time, int me
     memory.len = memory_size / MEMLEN;
     memory.memory = (page **)calloc (memory.len, sizeof (page *));
     assert (memory.memory);
-    memory.recently_evicted = (int *)calloc (memory.len, sizeof (int) * memory.len);
+    memory.recently_evicted = (page **)calloc (memory.len, sizeof (page *));
     assert (memory.recently_evicted);
     memory.num_recently_evicted = 0;
     while (remaining != 0)
@@ -73,8 +73,8 @@ int next_helper (datat *head, enum scheduler type, int quantum, int time, int me
         next = getFromQueue (q);
         if (next != NULL)
         {
-            time = assign_memory (&memory, q, next, quantum, time);
-            time = apply_quantum (&memory, head, next, quantum, time);
+            time = assign_memory (&memory, q, next, quantum, time, malgo);
+            time = apply_quantum (&memory, head, next, quantum, time, schedule);
 
 
             remaining = left (head);
@@ -109,7 +109,7 @@ bool evict_page (mem *memory, page *next)
     {
         memory->memory[next->id] = NULL;
         next->allocated = false;
-        memory->recently_evicted[memory->num_recently_evicted++] = next->id;
+        memory->recently_evicted[memory->num_recently_evicted++] = next;
         memory->cap--;
         return true;
     }
@@ -139,8 +139,32 @@ int *getIds (datat *next)
     }
     return ids;
 }
+
+void printAddresses (page **arr, int n)
+{
+    printf ("mem-addresses=[");
+    for (int i = 0; i < n; i++)
+    {
+        printf ("%d", arr[i]->id);
+        if (i != n - 1)
+        {
+            printf (", ");
+        }
+    }
+    printf ("]");
+}
+void printevicted (mem *memory, int time)
+{
+    if (memory->num_recently_evicted > 0)
+    {
+        printf ("%d, EVICTED, ", time);
+        printAddresses (memory->recently_evicted, memory->num_recently_evicted);
+        printf ("\n");
+    }
+}
+
 // assign_memory assigns memory to a process
-int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time)
+int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, enum memory_algorithm type)
 {
     int needed_pages = next->memunits;
 
@@ -151,14 +175,14 @@ int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time)
         {
             if (memoryallocate (memory, q, p)) // attempt to assign without evicting processes
             {
-                time += 2;
+                next->loadtime += 2;
                 continue;
             }
             datat *oldest = q->front; // the front of the queue is this process, so the one following is the last executed.
             bool searching = true;
             do
             {
-                if (MEMALGO == 0) // swapping
+                if (type == swapping) // swapping
                 {
                     if (evict_process (memory, oldest))
                     {
@@ -166,7 +190,7 @@ int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time)
                         searching = false;
                     }
                 }
-                else // virtual
+                else if (type == virtual)
                 {
                     for (int i = 0; i < oldest->memunits && needed_pages > 0; i++)
                     {
@@ -180,34 +204,32 @@ int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time)
                 oldest = oldest->queueNext;
             } while (searching && oldest != NULL);
             assert (memoryallocate (memory, q, p));
-            time += 2;
+            next->loadtime += 2;
         }
     }
-    if (memory->num_recently_evicted > 0)
-    {
-        printf ("%d, EVICTED, mem-addresses=[", time);
-        for (int i = 0; i < memory->num_recently_evicted; i++)
-        {
-            printf ("%d", memory->recently_evicted[i]);
-            if (i != memory->num_recently_evicted - 1)
-            {
-                printf (", ");
-            }
-        }
-        memory->num_recently_evicted = 0;
-        printf ("]\n");
-    }
+    printevicted (memory, time);
     return time;
 }
 
-int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time)
+int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time, enum scheduler type)
 {
     if (next->remaining == 0)
     {
         return time;
     }
-    printf ("%d, RUNNING, id=%d, remaining-time=%d\n", time, next->procid, next->remaining);
-    if (quantum == -1)
+    if (next->loadtime != 0)
+    {
+        printf ("%d, RUNNING, id=%d, remaining-time=%d, load-time=%d, mem-usage=%d%%,", time,
+                next->procid, next->remaining, next->loadtime, (memory->cap / memory->len) * 100);
+        printAddresses (next->memory, next->memunits);
+        printf ("\n");
+        time += next->loadtime;
+    }
+    else
+    {
+        printf ("%d, RUNNING, id=%d, remaining-time=%d\n", time, next->procid, next->remaining);
+    }
+    if (type == first_come)
     {
         time += next->remaining;
         next->remaining = 0;
@@ -229,6 +251,8 @@ int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time)
         next->remaining = 0;
     }
     evict_process (memory, next);
+    printevicted (memory, time);
+    memory->num_recently_evicted = 0;
     printf ("%d, FINISHED, id=%d, proc-remaining=%d\n", time, next->procid, left (head));
     return time;
 }
