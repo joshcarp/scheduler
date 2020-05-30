@@ -46,8 +46,8 @@ int next_helper (datat *head, enum scheduler type, int quantum, int time)
     datat *next = NULL;
     datat *data = head;
     mem memory;
-    memory.len = 0;
-    memory.memory = (page **)calloc (TOTALMEM / MEMLEN, sizeof (page *));
+    memory.len = TOTALMEM / MEMLEN;
+    memory.memory = (page **)calloc (memory.len, sizeof (page *));
     assert (memory.memory);
     while (remaining != 0)
     {
@@ -81,7 +81,6 @@ int next_helper (datat *head, enum scheduler type, int quantum, int time)
 int memoryallocate (mem memory, queue *q, page *p, int time)
 {
     // for (q->rear->memsize)
-    datat *oldest = q->front->queueNext; // the front of the queue is this process, so the one following is the last executed.
     int pageid = -1;
     // TODO: assign memory,
     for (int i = 0; i < memory.len; i++)
@@ -89,13 +88,15 @@ int memoryallocate (mem memory, queue *q, page *p, int time)
         if (memory.memory[i] == NULL)
         {
             memory.memory[i] = p;
+            p->allocated = true;
             if (pageid == -1)
             {
                 p->id = i;
             }
+            return time;
         }
     }
-
+    datat *oldest = q->front->queueNext; // the front of the queue is this process, so the one following is the last executed.
     bool cont = true;
     do
     {
@@ -130,7 +131,7 @@ int memoryallocate (mem memory, queue *q, page *p, int time)
 // assign_memory assigns memory to a process
 int assign_memory (mem memory, queue *q, datat *next, int quantum, int time)
 {
-    for (int i = 0; i < next->memsize; i++)
+    for (int i = 0; i < next->memunits; i++)
     {
         page *p = next->memory[i];
         if (p->allocated == false)

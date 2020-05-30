@@ -52,7 +52,7 @@ datat *newData (char *entry)
     d->memsize = atoi (fields[2]);
     d->remaining = d->jobtime;
     d->memunits = d->memsize / MEMLEN;
-    d->memory = (page **)malloc (sizeof (page *));
+    d->memory = (page **)malloc (sizeof (page *) * d->memunits);
     assert (d->memory);
     for (int i = 0; i < d->memunits; i++)
     {
