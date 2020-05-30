@@ -26,13 +26,47 @@ int left (datat *head)
 int next (datat *head, enum scheduler type, int quantum, int memory_size, enum memory_algorithm malgo, enum scheduler schedule)
 {
     int time = 0;
-    int remaining = left (head);
-    do
-    {
-        time = next_helper (head, type, quantum, memory_size, time, malgo, schedule);
-        remaining = left (head);
-    } while (remaining);
+    // int remaining = left (head);
+    // do
+    // {
+    time = next_helper (head, type, quantum, memory_size, time, malgo, schedule);
+    //     remaining = left (head);
+    // } while (remaining);
     return 0;
+}
+
+void printStats (datat *head, int time)
+{
+    int intervals = time / 60 + 1;
+    int *throughput = (int *)calloc (intervals, sizeof (int) * (intervals));
+    int total_turnaroundtime = 0;
+    float time_overhead_max = 0;
+    float time_overhead_total = 0;
+    float overhead;
+    int num = 0;
+    datat *next = head;
+    while (next)
+    {
+        throughput[next->finishingtime / 60] += 1;
+        total_turnaroundtime += next->finishingtime - next->arrival;
+        overhead = (float)(next->finishingtime - next->arrival) / next->jobtime;
+        if (overhead > time_overhead_max)
+        {
+            time_overhead_max = overhead;
+        }
+        time_overhead_total += overhead;
+        num++;
+        next = next->llNext;
+    }
+    printf ("Throughput ");
+    for (int i = 0; i < intervals; i++)
+    {
+        printf ("%d ", throughput[i]);
+    }
+    printf ("\n");
+    printf ("Turnaround time %d\n", total_turnaroundtime / num);
+    printf ("Time overhead %.2f, %.2f\n", time_overhead_max, time_overhead_total / num);
+    printf ("Makespan %d\n", time);
 }
 
 int next_helper (datat *head, enum scheduler type, int quantum, int memory_size, int time, enum memory_algorithm malgo, enum scheduler schedule)
@@ -43,6 +77,7 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
     {
         return time;
     }
+
     datat *next = NULL;
     datat *data = head;
     mem memory;
@@ -52,6 +87,7 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
     memory.recently_evicted = (page **)calloc (memory.len, sizeof (page *));
     assert (memory.recently_evicted);
     memory.num_recently_evicted = 0;
+
     while (remaining != 0)
     {
         while (data)
@@ -80,6 +116,7 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
             remaining = left (head);
         }
     }
+    printStats (head, time);
     return time;
 }
 
@@ -253,6 +290,7 @@ int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time,
     evict_process (memory, next);
     printevicted (memory, time);
     memory->num_recently_evicted = 0;
+    next->finishingtime = time;
     printf ("%d, FINISHED, id=%d, proc-remaining=%d\n", time, next->procid, left (head));
     return time;
 }

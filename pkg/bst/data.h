@@ -24,6 +24,7 @@ struct datat{
 	int jobtime;
 	int loadtime;
 	int remaining;
+	int finishingtime;
 	struct datat *llNext;
 	struct datat *queueNext;
 	struct datat *queuePrev;
