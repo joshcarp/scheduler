@@ -22,3 +22,7 @@ int apply_quantum (datat *head, datat *next, int quantum, int time);
 int next_helper (datat *head, enum scheduler type, int quantum, int time);
 
 int left(datat *head);
+
+int assign_memory (mem memory, queue *q, datat *next, int quantum, int time);
+
+int apply_quantum (datat *head, datat *next, int quantum, int time);

@@ -16,7 +16,7 @@
 #define STARTSPACE 100
 
 typedef struct node_t {
-	struct datat *data;
+	struct process *data;
 	struct node_t *lt;
 	struct node_t *gt;
 }node_t;

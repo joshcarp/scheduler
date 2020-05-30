@@ -9,7 +9,8 @@ program can be changed to support completely different keys/data entries only by
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#define MEMLEN 4
+#define TOTALMEM 400
 #ifndef DATA_H
 #define DATA_H
 #include "data.h"
@@ -50,7 +51,18 @@ datat *newData (char *entry)
     d->procid = atoi (fields[1]);
     d->memsize = atoi (fields[2]);
     d->remaining = d->jobtime;
-
+    d->memunits = d->memsize / MEMLEN;
+    d->memory = (page **)malloc (sizeof (page *));
+    assert (d->memory);
+    for (int i = 0; i < d->memunits; i++)
+    {
+        d->memory[i] = (page *)malloc (sizeof (page));
+        assert (d->memory[i]);
+        d->memory[i]->allocated = false;
+        d->memory[i]->id = -1;
+        d->memory[i]->parent = d;
+        d->memory[i]->size = MEMLEN;
+    }
     return d;
 }
 
@@ -72,6 +84,7 @@ datat *blankData ()
     datat *d = (datat *)malloc (sizeof (datat));
     d->llNext = NULL;
     d->queueNext = NULL;
+    d->queuePrev = NULL;
     assert (d);
     return d;
 }

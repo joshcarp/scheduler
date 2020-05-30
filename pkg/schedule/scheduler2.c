@@ -1,14 +1,20 @@
 
 #include "scheduler.h"
+#include <assert.h>
+#include <stdbool.h>
+#include <stdlib.h>
 
-int left (process *head)
+#define MEMLEN 4
+#define TOTALMEM 400
+#define MEMALGO 1
+int left (datat *head)
 {
     if (head == NULL)
     {
         return 0;
     }
     int count = 0;
-    process *data = head;
+    datat *data = head;
     while (data)
     {
         count += data->remaining != 0;
@@ -17,7 +23,7 @@ int left (process *head)
     return count;
 }
 
-int next (process *head, enum scheduler type, int quantum)
+int next (datat *head, enum scheduler type, int quantum)
 {
     int time = 0;
     int remaining = left (head);
@@ -29,8 +35,7 @@ int next (process *head, enum scheduler type, int quantum)
     return 0;
 }
 
-
-int next_helper (process *head, enum scheduler type, int quantum, int time)
+int next_helper (datat *head, enum scheduler type, int quantum, int time)
 {
     queue *q = NewQueue ();
     int remaining = left (head);
@@ -38,8 +43,12 @@ int next_helper (process *head, enum scheduler type, int quantum, int time)
     {
         return time;
     }
-    process *next = NULL;
-    process *data = head;
+    datat *next = NULL;
+    datat *data = head;
+    mem memory;
+    memory.len = 0;
+    memory.memory = (page **)calloc (TOTALMEM / MEMLEN, sizeof (page *));
+    assert (memory.memory);
     while (remaining != 0)
     {
         while (data)
@@ -60,7 +69,7 @@ int next_helper (process *head, enum scheduler type, int quantum, int time)
         }
         next = getFromQueue (q);
 
-        time = assign_memory(memory, q, next, quantum, time);
+        time = assign_memory (memory, q, next, quantum, time);
         time = apply_quantum (head, next, quantum, time);
 
 
@@ -72,43 +81,67 @@ int next_helper (process *head, enum scheduler type, int quantum, int time)
 int memoryallocate (mem memory, queue *q, page *p, int time)
 {
     // for (q->rear->memsize)
-    process *oldest = q->rear;
-    int remainingsize = p->size;
+    datat *oldest = q->front->queueNext; // the front of the queue is this process, so the one following is the last executed.
     int pageid = -1;
-    // TODO: assign memory, 
-    while (remainingsize > 0)
+    // TODO: assign memory,
+    for (int i = 0; i < memory.len; i++)
     {
-        for (int i = 0; i < oldest->memunits && remainingsize > 0; i++)
+        if (memory.memory[i] == NULL)
         {
-            if (oldest->memory[i]->allocated)
+            memory.memory[i] = p;
+            if (pageid == -1)
             {
-                if (pageid == -1){
-                    pageid = oldest->memory[i]->id;
-                }
-                oldest->memory[i]->allocated = 0;
-                remainingsize -= oldest->memory[i]->size;
+                p->id = i;
             }
         }
     }
-    p->id = pageid;
-    return time;
+
+    bool cont = true;
+    do
+    {
+
+        for (int i = 0; i < oldest->memunits; i++)
+        {
+            if (MEMALGO == 0)
+            {
+                if (oldest->memory[i]->allocated)
+                {
+                    cont = false;
+                    memory.memory[oldest->memory[i]->id] = NULL;
+                    oldest->memory[i]->allocated = false;
+                }
+            }
+            else
+            {
+                if (oldest->memory[i]->allocated)
+                {
+                    oldest->memory[i]->allocated = false;
+                    p->id = oldest->memory[i]->id;
+                    memory.memory[p->id] = p;
+                    return time;
+                }
+            }
+        }
+        oldest = oldest->queueNext;
+    } while (cont && oldest != NULL);
+    return memoryallocate (memory, q, p, time);
 }
 
 // assign_memory assigns memory to a process
-int assign_memory (mem memory, queue *q, process *next, int quantum, int time)
+int assign_memory (mem memory, queue *q, datat *next, int quantum, int time)
 {
     for (int i = 0; i < next->memsize; i++)
     {
         page *p = next->memory[i];
-        if (p->allocated == 0)
+        if (p->allocated == false)
         {
-            time = memoryallocate (memory,q, p, time);
+            time = memoryallocate (memory, q, p, time);
         }
     }
     return time;
 }
 
-int apply_quantum (process *head, process *next, int quantum, int time)
+int apply_quantum (datat *head, datat *next, int quantum, int time)
 {
     if (next->remaining == 0)
     {
