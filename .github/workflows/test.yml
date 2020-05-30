@@ -9,24 +9,24 @@ jobs:
     - name: Make
       run: make
     - name: One
-      run: ./scripts/test_singular 1
+      run: ./scripts/test_singular.sh 1
     - name: Two
-      run: ./scripts/test_singular 2
+      run: ./scripts/test_singular.sh 2
     - name: Three
-      run: ./scripts/test_singular 3
+      run: ./scripts/test_singular.sh 3
     - name: Four
-      run: ./scripts/test_singular 4
+      run: ./scripts/test_singular.sh 4
     - name: Five
-      run: ./scripts/test_singular 5
+      run: ./scripts/test_singular.sh 5
     - name: Six
-      run: ./scripts/test_singular 6
+      run: ./scripts/test_singular.sh 6
     - name: Seven
-      run: ./scripts/test_singular 7
+      run: ./scripts/test_singular.sh 7
     - name: Eight
-      run: ./scripts/test_singular 8
+      run: ./scripts/test_singular.sh 8
     - name: Nine
-      run: ./scripts/test_singular 9
+      run: ./scripts/test_singular.sh 9
     - name: Ten
-      run: ./scripts/test_singular 10
+      run: ./scripts/test_singular.sh 10
     - name: Eleven
-      run: ./scripts/test_singular 11
+      run: ./scripts/test_singular.sh 11
