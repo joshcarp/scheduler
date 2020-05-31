@@ -29,6 +29,12 @@ if [ $? -ne 0 ]; then
     echo "---------- STDERR ------------"
     cat /tmp/stderr; rm /tmp/stderr
     echo -e "------------------------------\n"
+    echo "========== EXPECTED OUTPUT ============"
+    cat ${CASES_DIR}/testcase${i}.out
+    echo "==================================="
+    echo "========== ACTUAL OUTPUT ============"
+    cat /tmp/stdout
+    echo "==================================="
     exit 1
 else
     echo -e "Test #${i} PASSED\n"
