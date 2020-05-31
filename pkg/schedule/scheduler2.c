@@ -102,10 +102,10 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
     datat *next = NULL;
     datat *data = head;
     mem memory;
-    memory.len = memory_size / MEMLEN;
-    memory.memory = (page **)calloc (memory.len, sizeof (page *));
+    memory.cap = memory_size / MEMLEN;
+    memory.memory = (page **)calloc (memory.cap, sizeof (page *));
     assert (memory.memory);
-    memory.recently_evicted = (page **)calloc (memory.len, sizeof (page *));
+    memory.recently_evicted = (page **)calloc (memory.cap, sizeof (page *));
     assert (memory.recently_evicted);
     memory.num_recently_evicted = 0;
     int loadtime = 0;
@@ -148,12 +148,12 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
 bool memoryallocate (mem *memory, queue *q, page *p)
 {
     // int pageid = -1;
-    for (int i = 0; i < memory->len; i++)
+    for (int i = 0; i < memory->cap; i++)
     {
         if (memory->memory[i] == NULL)
         {
             memory->memory[i] = p;
-            memory->cap++;
+            memory->len++;
             p->allocated = true;
             p->id = i;
             // if (pageid == -1)
@@ -173,7 +173,7 @@ bool evict_page (mem *memory, page *next)
         memory->memory[next->id] = NULL;
         next->allocated = false;
         memory->recently_evicted[memory->num_recently_evicted++] = next;
-        memory->cap--;
+        memory->len--;
         return true;
     }
     return false;
@@ -267,7 +267,7 @@ int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, en
     int non_page_fault = 4 - loaded;
     int allocated_pages = next->memunits;
     int loadtime = 0;
-    // if (loaded >= 4 && memory->cap == memory->len)
+    // if (loaded >= 4 && memory->len == memory->cap)
     // {
 
     //     next->remaining += needed_pages;
@@ -278,7 +278,7 @@ int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, en
         printf ("");
     }
 
-    if (type == virtual && (memory->len - memory->cap < needed_pages))
+    if (type == virtual && (memory->cap - memory->len < needed_pages))
     {
         // next->page_faults = needed_pages - loaded;
         // next->remaining += needed_pages - 4; // page faults
@@ -342,7 +342,7 @@ int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time,
     if (next->loadtime != 0)
     {
         printf ("%d, RUNNING, id=%d, remaining-time=%d, load-time=%d, mem-usage=%d%%, ", time,
-                next->procid, next->remaining, loadtime, (memory->cap / memory->len) * 100);
+                next->procid, next->remaining, loadtime, (memory->len / memory->cap) * 100);
         printAddresses (next->memory, next->memunits, true);
         printf ("\n");
         if (time == 240)
