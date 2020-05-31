@@ -23,4 +23,5 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: scheduler
+    - name: Run
       run: ./scripts/test_singular.sh 1
