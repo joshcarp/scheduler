@@ -78,6 +78,11 @@ void freeData (datat *d)
         freeData (d->llNext);
         d->llNext = NULL;
     }
+    for (int i = 0; i < d->memunits; i++)
+    {
+        free (d->memory[i]);
+    }
+    free (d->memory);
     free (d);
 }
 

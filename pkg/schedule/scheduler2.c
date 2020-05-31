@@ -85,6 +85,8 @@ void printStats (datat *head, int time)
     printf ("Turnaround time %d\n", total_turnaroundtime / num);
     printf ("Time overhead %.2f, %.2f\n", time_overhead_max, time_overhead_total / num);
     printf ("Makespan %d\n", time);
+    free (throughput);
+    freeData (head);
 }
 
 int next_helper (datat *head, enum scheduler type, int quantum, int memory_size, int time, enum memory_algorithm malgo, enum scheduler schedule)
