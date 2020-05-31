@@ -11,12 +11,12 @@
 // Typedef the key so it could theoreticallybe changed 
 typedef int dictKey_t;
 
-/* datat is a linked list and has a key, and a 'location', which is the
+/* process is a linked list and has a key, and a 'location', which is the
 amount of bytes of data from the start of the input file. When needing to print this value will 
 be used to offset the start of the file (ie pointer arithmetic for files)*/
 
 typedef struct page page;
-struct datat{
+struct process{
 	int key;
 	int arrival;
 	int procid;
@@ -26,18 +26,18 @@ struct datat{
 	int page_faults;
 	int remaining;
 	int finishingtime;
-	struct datat *llNext;
-	struct datat *queueNext;
-	struct datat *queuePrev;
+	struct process *llNext;
+	struct process *queueNext;
+	struct process *queuePrev;
 	page **memory;
 	int memunits;
 	int last_execution_time;
 };
 
-typedef struct datat datat;
+typedef struct process process;
 
 struct page{
-	datat* parent;
+	process* parent;
 	bool allocated;
 	int id;
 	int size;
@@ -55,28 +55,28 @@ struct mem{
 
 typedef struct mem mem;
 struct queue{
-	datat *front, *rear;
+	process *front, *rear;
 	int num;
 };
 
 typedef struct queue queue;
-
+mem *new_memory (int capacity);
 dictKey_t *NewKey();
-datat *newData (char *entry);
-datat *blankData();
+process *newData (char *entry);
+process *blankData();
 int cmp(int, int);
-void printData(datat*);
+void printData(process*);
 void printKey(dictKey_t);
-void printFData(datat*, FILE*);
-void printFAttr(datat *d, FILE* outFile, char* Attr);
+void printFData(process*, FILE*);
+void printFAttr(process *d, FILE* outFile, char* Attr);
 void fieldFromStr(char *row, char dest[MAXFIELDNUM][MAXFIELD]);
-datat* linkData(datat*, datat*);
-int searchData(datat *,int, FILE*, char *);
-void freeData(datat*);
-datat*  parseFile(FILE*);
+process* linkData(process*, process*);
+int searchData(process *,int, FILE*, char *);
+void freeData(process*);
+process*  parseFile(FILE*);
 
-queue *NewQueue ();
+queue *new_q ();
 
-void addToQueue (queue *q, datat *d);
+void add (queue *q, process *d);
 
-datat* getFromQueue (queue *q);
+process* pop (queue *q);

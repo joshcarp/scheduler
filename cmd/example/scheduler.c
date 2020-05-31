@@ -1,9 +1,4 @@
 #include "../../pkg/schedule/scheduler.h"
-// #ifndef BST_H
-// #define BST_H
-
-// #include "../../pkg/bst/bst.h"
-// #endif
 #include <assert.h>
 #include <ctype.h>
 #include <getopt.h>
@@ -72,7 +67,7 @@ int main (int argc, char **argv)
         }
     FILE *inFile = fopen (file, "r");
     assert (inFile);
-    datat *head = parseFile (inFile);
+    process *head = parseFile (inFile);
     run (head, quantum, memsize, memallocation, algorithm);
     return 0;
 }

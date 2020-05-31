@@ -5,16 +5,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-
 #define PAGE_LENGTH 4
-int left (datat *head, int time)
+
+int left (process *head, int time)
 {
     if (head == NULL)
     {
         return 0;
     }
     int count = 0;
-    datat *data = head;
+    process *data = head;
     while (data)
     {
         count += data->remaining != 0 && (data->arrival <= time || time == -1);
@@ -22,6 +22,7 @@ int left (datat *head, int time)
     }
     return count;
 }
+
 int round_5 (float x)
 {
     float rem = x - (int)x;
@@ -42,7 +43,7 @@ int ceiling (float x)
     return x;
 }
 
-void print_stats (datat *head, int time)
+void print_stats (process *head, int time)
 {
     int intervals = (int)(((float)time / 60));
     int *throughput = (int *)calloc (intervals, sizeof (int) * (intervals));
@@ -51,7 +52,7 @@ void print_stats (datat *head, int time)
     float time_overhead_total = 0;
     float overhead;
     int num = 0;
-    datat *next = head;
+    process *next = head;
     while (next)
     {
         throughput[((next->finishingtime - 1) / 60)] += 1;
@@ -89,26 +90,21 @@ void print_stats (datat *head, int time)
 }
 
 
-int run (datat *head, int quantum, int memory_size, enum memory_algorithm malgo, enum scheduler_algorithms schedule)
+int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule)
 {
     int time = 0;
-    queue *q = NewQueue ();
+    queue *q = new_q ();
     int remaining = left (head, -1);
     if (head == NULL)
     {
         return time;
     }
 
-    datat *next = NULL;
-    datat *data = head;
-    mem memory;
-    memory.cap = memory_size / PAGE_LENGTH;
-    memory.len = 0;
-    memory.memory = (page **)calloc (memory.cap, sizeof (page *));
-    assert (memory.memory);
-    memory.recently_evicted = (page **)calloc (memory.cap, sizeof (page *));
-    assert (memory.recently_evicted);
-    memory.num_recently_evicted = 0;
+    process *next = NULL;
+    process *data = head;
+    //
+    mem *memory = new_memory (memory_size / PAGE_LENGTH);
+    //
     int loadtime = 0;
     while (remaining != 0)
     {
@@ -120,26 +116,26 @@ int run (datat *head, int quantum, int memory_size, enum memory_algorithm malgo,
             }
             if (time >= data->arrival)
             {
-                addToQueue (q, data);
+                add (q, data);
             }
             data = data->llNext;
         }
         if (next != NULL && next->remaining != 0)
         {
-            addToQueue (q, next);
+            add (q, next);
         }
         else
         {
             next = NULL;
         }
-        next = getFromQueue (q);
+        next = pop (q);
         if (next != NULL)
         {
-            if (malgo != unlimited)
+            if (mem_algo != unlimited)
             {
-                loadtime = assign_memory (&memory, q, next, quantum, time, malgo);
+                loadtime = assign_memory (memory, q, next, quantum, time, mem_algo);
             }
-            time = apply_quantum (&memory, head, next, quantum, time, loadtime, schedule);
+            time = apply_quantum (memory, head, next, quantum, time, loadtime, schedule);
             remaining = left (head, -1);
         }
         else
@@ -149,8 +145,9 @@ int run (datat *head, int quantum, int memory_size, enum memory_algorithm malgo,
     }
     print_stats (head, time);
     free (q);
-    free (memory.memory);
-    free (memory.recently_evicted);
+    free (memory->memory);
+    free (memory->recently_evicted);
+    free (memory);
     return 0;
 }
 
@@ -188,7 +185,7 @@ bool evict_page (mem *memory, page *next)
     return false;
 }
 
-bool evict_process (mem *memory, datat *next)
+bool evict_process (mem *memory, process *next)
 {
     bool success = false;
     for (int i = 0; i < next->memunits; i++)
@@ -202,7 +199,7 @@ bool evict_process (mem *memory, datat *next)
 }
 
 
-int *getIds (datat *next)
+int *getIds (process *next)
 {
     int *ids = (int *)calloc (next->memunits, sizeof (int) * next->memunits);
     for (int i = 0; i < next->memunits; i++)
@@ -269,7 +266,7 @@ int loaded_pages (page **arr, int n)
     return loaded;
 }
 // assign_memory assigns memory to a process
-int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, enum memory_algorithm type)
+int assign_memory (mem *memory, queue *q, process *next, int quantum, int time, enum memory_algorithm type)
 {
     int loaded = loaded_pages (next->memory, next->memunits);
     int needed_pages = next->memunits - loaded;
@@ -293,7 +290,8 @@ int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, en
                 loadtime += 2; // TODO: remove one of these
                 continue;
             }
-            datat *oldest = q->front; // the front of the queue is this process, so the one following is the last executed.
+            process *oldest =
+            q->front; // the front of the queue is this process, so the one following is the last executed.
             bool searching = true;
             do
             {
@@ -328,7 +326,7 @@ int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, en
     return loadtime;
 }
 
-int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time, int loadtime, enum scheduler_algorithms type)
+int apply_quantum (mem *memory, process *head, process *next, int quantum, int time, int loadtime, enum scheduler_algorithms type)
 {
     if (next->remaining == 0)
     {

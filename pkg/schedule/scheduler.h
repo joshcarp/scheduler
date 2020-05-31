@@ -24,10 +24,10 @@ enum memory_algorithm {
 
 } memory_algorithm;
 
-int run (datat *head, int quantum, int memory_size, enum memory_algorithm malgo, enum scheduler_algorithms schedule);
+int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule);
 
-int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time, int loadtime, enum scheduler_algorithms type);
+int apply_quantum (mem *memory, process *head, process *next, int quantum, int time, int loadtime, enum scheduler_algorithms type);
 
-int left (datat *head, int time);
+int left (process *head, int time);
 
-int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, enum memory_algorithm type);
+int assign_memory (mem *memory, queue *q, process *next, int quantum, int time, enum memory_algorithm type);

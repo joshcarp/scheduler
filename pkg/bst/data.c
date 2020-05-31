@@ -35,24 +35,33 @@ int cmp (int m, int n)
     return GT;
 }
 
-/*newData returns a datat pointer with num as key */
-datat *newData (char *entry)
+mem *new_memory (int capacity)
+{
+    mem *memory = (mem *)malloc (sizeof (mem));
+    memory->cap = capacity;
+    memory->len = 0;
+    memory->memory = (page **)calloc (memory->cap, sizeof (page *));
+    assert (memory->memory);
+    memory->recently_evicted = (page **)calloc (memory->cap, sizeof (page *));
+    assert (memory->recently_evicted);
+    memory->num_recently_evicted = 0;
+    return memory;
+}
+
+/*newData returns a process pointer with num as key */
+process *newData (char *entry)
 {
     char fields[MAXFIELDNUM][MAXFIELD];
     fieldFromStr (entry, fields);
-    datat *d = blankData ();
+    process *d = blankData ();
     d->llNext = NULL;
     d->queueNext = NULL;
-    // strncpy (d->key, key, 20);
-
-    d->key = atoi (fields[0]);
     d->arrival = atoi (fields[0]);
     d->jobtime = atoi (fields[3]);
     d->procid = atoi (fields[1]);
     d->memsize = atoi (fields[2]);
     d->remaining = d->jobtime;
     d->loadtime = 0;
-    d->page_faults = 0;
     d->finishingtime = 0;
     d->memunits = d->memsize / PAGE_LENGTH;
     d->memory = (page **)malloc (sizeof (page *) * d->memunits);
@@ -70,7 +79,7 @@ datat *newData (char *entry)
 }
 
 /* freeData recursivley frees data */
-void freeData (datat *d)
+void freeData (process *d)
 {
     assert (d);
     if (d->llNext != NULL)
@@ -87,9 +96,9 @@ void freeData (datat *d)
 }
 
 /*blankData returns pointer to empty data struct */
-datat *blankData ()
+process *blankData ()
 {
-    datat *d = (datat *)malloc (sizeof (datat));
+    process *d = (process *)malloc (sizeof (process));
     d->llNext = NULL;
     d->queueNext = NULL;
     d->queuePrev = NULL;
@@ -98,12 +107,12 @@ datat *blankData ()
 }
 
 // Link data links the data together in a linked list
-datat *linkData (datat *d, datat *e)
+process *linkData (process *d, process *e)
 {
     assert (d);
-    datat *tmp;
+    process *tmp;
     // look, I would insert this right at the head but it's still O(1) insertion
-    datat *next = d;
+    process *next = d;
     int set = 0;
     while (next)
     {
@@ -144,7 +153,7 @@ void fieldFromStr (char *buff, char dest[MAXFIELDNUM][MAXFIELD])
 
 
 /*printFData is the function used to print the contents of data */
-void printFData (datat *d, FILE *outFile)
+void printFData (process *d, FILE *outFile)
 {
     if (!outFile)
     {
@@ -155,7 +164,7 @@ void printFData (datat *d, FILE *outFile)
 }
 
 /*printFAttr is the function used to print the Attribute search to file */
-void printFAttr (datat *d, FILE *outFile, char *Attr)
+void printFAttr (process *d, FILE *outFile, char *Attr)
 {
     if (!outFile)
     {
@@ -167,12 +176,12 @@ void printFAttr (datat *d, FILE *outFile, char *Attr)
     return;
 }
 /*printData is the function used to print the contents of data */
-void printData (datat *d)
+void printData (process *d)
 {
     printf ("%d", d->key);
 }
 
-queue *NewQueue ()
+queue *new_q ()
 {
     queue *q = (struct queue *)malloc (sizeof (struct queue));
     q->front = q->rear = NULL;
@@ -180,12 +189,12 @@ queue *NewQueue ()
     return q;
 }
 
-void addToQueue (queue *q, datat *d)
+void add (queue *q, process *d)
 {
-    struct datat *temp = d;
+    struct process *temp = d;
     q->num++;
 
-    struct datat *t = q->front;
+    struct process *t = q->front;
     while (t)
     {
         // if (t == d)
@@ -208,7 +217,7 @@ void addToQueue (queue *q, datat *d)
     q->rear = temp;
 }
 
-datat *getFromQueue (queue *q)
+process *pop (queue *q)
 {
     if (q->front == NULL || q->num == 0)
     {
@@ -216,7 +225,7 @@ datat *getFromQueue (queue *q)
         return NULL;
     }
 
-    datat *temp = q->front;
+    process *temp = q->front;
     q->front = q->front->queueNext;
     if (q->front == NULL)
     {
@@ -228,13 +237,13 @@ datat *getFromQueue (queue *q)
 }
 
 // /* parseFile parses a csv file into a bst. cmd is for command line arguments*/
-datat *parseFile (FILE *file)
+process *parseFile (FILE *file)
 {
     char buf[MAXBUFF];
     int buffSize = 0;
-    datat *head = NULL;
-    datat *d;
-    datat *next = NULL;
+    process *head = NULL;
+    process *d;
+    process *next = NULL;
     // While stdin, keep cumulative sum of location from start of file and parse row into the bst
     while (fgets (buf, MAXBUFF, file) && buf[0] != '\n')
     {
