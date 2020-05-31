@@ -27,5 +27,6 @@ jobs:
     - shell: bash
       run: |
         mv storage/scheduler .
+        chmod u+x scheduler
     - name: Run
       run: ./scripts/test_singular.sh 1
