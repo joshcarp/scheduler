@@ -23,6 +23,7 @@ struct datat{
 	int memsize;
 	int jobtime;
 	int loadtime;
+	int page_faults;
 	int remaining;
 	int finishingtime;
 	struct datat *llNext;

@@ -37,6 +37,7 @@
         "initializer_list": "c",
         "istream": "c",
         "new": "c",
-        "utility": "c"
+        "utility": "c",
+        "cstring": "c"
     }
 }

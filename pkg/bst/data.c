@@ -53,6 +53,7 @@ datat *newData (char *entry)
     d->memsize = atoi (fields[2]);
     d->remaining = d->jobtime;
     d->loadtime = 0;
+    d->page_faults = 0;
     d->finishingtime = 0;
     d->memunits = d->memsize / MEMLEN;
     d->memory = (page **)malloc (sizeof (page *) * d->memunits);

@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <strings.h>
 
 #define MEMLEN 4
 #define TOTALMEM 400
@@ -202,13 +203,12 @@ int *getIds (datat *next)
     return ids;
 }
 
-void printAddresses (page **arr, int n)
+void printAddresses (page **arr, int n, bool allocated)
 {
     printf ("mem-addresses=[");
     page *temp;
     for (int i = 0; i < n; ++i)
     {
-
         for (int j = i + 1; j < n; ++j)
         {
             if (arr[i] != NULL && arr[j] != NULL)
@@ -223,17 +223,17 @@ void printAddresses (page **arr, int n)
         }
     }
 
-
+    char comma[3] = "";
     for (int i = 0; i < n; i++)
     {
-        if (arr[i]->id == -1)
+        if (arr[i]->id == -1 || arr[i]->allocated != allocated)
         {
             continue;
         }
-        printf ("%d", arr[i]->id);
+        printf ("%s%d", comma, arr[i]->id);
         if (i != n - 1)
         {
-            printf (",");
+            strcpy (comma, ",");
         }
     }
     printf ("]");
@@ -243,7 +243,7 @@ void printevicted (mem *memory, int time)
     if (memory->num_recently_evicted > 0)
     {
         printf ("%d, EVICTED, ", time);
-        printAddresses (memory->recently_evicted, memory->num_recently_evicted);
+        printAddresses (memory->recently_evicted, memory->num_recently_evicted, false);
         printf ("\n");
     }
 }
@@ -266,12 +266,17 @@ int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, en
     int needed_pages = next->memunits - loaded;
     int allocated_pages = next->memunits;
     int loadtime = 0;
-    if (loaded >= 4 && memory->cap == memory->len)
+    // if (loaded >= 4 && memory->cap == memory->len)
+    // {
+
+    //     next->remaining += needed_pages;
+    //     return 0;
+    // }
+
+    if (type == virtual && memory->len - memory->cap <= 4)
     {
-        return 0;
-    }
-    else if (type == virtual && memory->len - memory->cap <= 4)
-    {
+        // next->page_faults = needed_pages - loaded;
+        next->remaining += needed_pages - 4;
         needed_pages = 4;
         allocated_pages = 4;
     }
@@ -331,8 +336,12 @@ int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time,
     {
         printf ("%d, RUNNING, id=%d, remaining-time=%d, load-time=%d, mem-usage=%d%%, ", time,
                 next->procid, next->remaining, loadtime, (memory->cap / memory->len) * 100);
-        printAddresses (next->memory, next->memunits);
+        printAddresses (next->memory, next->memunits, true);
         printf ("\n");
+        if (time == 182)
+        {
+            printf ("");
+        }
         time += loadtime;
     }
     else
@@ -357,7 +366,7 @@ int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time,
     }
     else
     {
-        time += quantum - next->remaining;
+        time += next->remaining;
         next->remaining = 0;
     }
 
