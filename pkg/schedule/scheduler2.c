@@ -47,7 +47,7 @@ void printStats (datat *head, int time)
 {
     int intervals = (int)(((float)time / 60));
     int *throughput = (int *)calloc (intervals, sizeof (int) * (intervals));
-    int total_turnaroundtime = 0;
+    int total_turnaroundtime = 1;
     float time_overhead_max = 0;
     float time_overhead_total = 0;
     float overhead;
@@ -82,7 +82,7 @@ void printStats (datat *head, int time)
         }
     }
     printf ("Throughput %d, %d, %d\n", ceiling (ave_throughput), min_throughput, max_throughput);
-    printf ("Turnaround time %d\n", total_turnaroundtime / num);
+    printf ("Turnaround time %d\n", ceiling ((float)total_turnaroundtime / (float)num));
     printf ("Time overhead %.2f, %.2f\n", time_overhead_max, time_overhead_total / num);
     printf ("Makespan %d\n", time);
     free (throughput);
