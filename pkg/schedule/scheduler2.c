@@ -45,7 +45,7 @@ int next (datat *head, enum scheduler type, int quantum, int memory_size, enum m
 
 void printStats (datat *head, int time)
 {
-    int intervals = ceiling (((float)time / 60));
+    int intervals = (int)(((float)time / 60));
     int *throughput = (int *)calloc (intervals, sizeof (int) * (intervals));
     int total_turnaroundtime = 0;
     float time_overhead_max = 0;
@@ -55,7 +55,7 @@ void printStats (datat *head, int time)
     datat *next = head;
     while (next)
     {
-        throughput[next->finishingtime / 60] += 1;
+        throughput[((next->finishingtime - 1) / 60)] += 1;
         total_turnaroundtime += next->finishingtime - next->arrival;
         overhead = (float)(next->finishingtime - next->arrival) / next->jobtime;
         if (overhead > time_overhead_max)
@@ -76,12 +76,12 @@ void printStats (datat *head, int time)
         {
             max_throughput = throughput[i];
         }
-        else if (throughput[i] < min_throughput || min_throughput == -1)
+        if (throughput[i] < min_throughput || min_throughput == -1)
         {
             min_throughput = throughput[i];
         }
     }
-    printf ("Throughput %d %d %d\n", ceiling (ave_throughput), min_throughput, max_throughput);
+    printf ("Throughput %d, %d, %d\n", ceiling (ave_throughput), min_throughput, max_throughput);
     printf ("Turnaround time %d\n", total_turnaroundtime / num);
     printf ("Time overhead %.2f, %.2f\n", time_overhead_max, time_overhead_total / num);
     printf ("Makespan %d\n", time);
