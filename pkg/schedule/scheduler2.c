@@ -107,7 +107,7 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
     memory.recently_evicted = (page **)calloc (memory.len, sizeof (page *));
     assert (memory.recently_evicted);
     memory.num_recently_evicted = 0;
-
+    int loadtime = 0;
     while (remaining != 0)
     {
         while (data)
@@ -131,11 +131,9 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
         {
             if (malgo != unlimited)
             {
-                time = assign_memory (&memory, q, next, quantum, time, malgo);
+                loadtime = assign_memory (&memory, q, next, quantum, time, malgo);
             }
-            time = apply_quantum (&memory, head, next, quantum, time, schedule);
-
-
+            time = apply_quantum (&memory, head, next, quantum, time, loadtime, schedule);
             remaining = left (head);
         }
     }
@@ -230,8 +228,9 @@ void printevicted (mem *memory, int time)
 int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, enum memory_algorithm type)
 {
     int needed_pages = next->memunits;
-
-    for (int i = 0; i < needed_pages; i++)
+    int allocated_pages = next->memunits;
+    int loadtime = 0;
+    for (int i = 0; i < allocated_pages; i++)
     {
         page *p = next->memory[i];
         if (p->allocated == false)
@@ -239,6 +238,7 @@ int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, en
             if (memoryallocate (memory, q, p)) // attempt to assign without evicting processes
             {
                 next->loadtime += 2;
+                loadtime += 2; //TODO: remove one of these
                 continue;
             }
             datat *oldest = q->front; // the front of the queue is this process, so the one following is the last executed.
@@ -265,16 +265,18 @@ int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, en
                     }
                 }
                 oldest = oldest->queueNext;
-            } while (searching && oldest != NULL);
+            } while (needed_pages > 0 && searching && oldest != NULL);
             assert (memoryallocate (memory, q, p));
             next->loadtime += 2;
+            loadtime += 2;
         }
     }
     printevicted (memory, time);
-    return time;
+    memory->num_recently_evicted = 0;
+    return loadtime;
 }
 
-int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time, enum scheduler type)
+int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time, int loadtime, enum scheduler type)
 {
     if (next->remaining == 0)
     {
@@ -283,10 +285,10 @@ int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time,
     if (next->loadtime != 0)
     {
         printf ("%d, RUNNING, id=%d, remaining-time=%d, load-time=%d, mem-usage=%d%%, ", time,
-                next->procid, next->remaining, next->loadtime, (memory->cap / memory->len) * 100);
+                next->procid, next->remaining, loadtime, (memory->cap / memory->len) * 100);
         printAddresses (next->memory, next->memunits);
         printf ("\n");
-        time += next->loadtime;
+        time += loadtime;
     }
     else
     {
@@ -313,6 +315,7 @@ int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time,
         time += quantum - next->remaining;
         next->remaining = 0;
     }
+
     evict_process (memory, next);
     printevicted (memory, time);
     memory->num_recently_evicted = 0;

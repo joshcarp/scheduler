@@ -28,7 +28,7 @@ enum memory_algorithm {
 
 int next (datat *head, enum scheduler type, int quantum, int memory_size, enum memory_algorithm malgo, enum scheduler schedule);
 
-int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time, enum scheduler type);
+int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time, int loadtime, enum scheduler type);
 
 int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,int time, enum memory_algorithm malgo, enum scheduler schedule);
 
