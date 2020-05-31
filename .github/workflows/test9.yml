@@ -1,4 +1,4 @@
-name: Test
+name: nine
 
 on: [push]
 jobs:
@@ -8,5 +8,5 @@ jobs:
     - uses: actions/checkout@v1
     - name: Make
       run: make
-    - name: One
+    - name: Test
       run: ./scripts/test_singular.sh 9
