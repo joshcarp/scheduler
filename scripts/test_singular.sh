@@ -37,6 +37,7 @@ if [ $? -ne 0 ]; then
     echo "==================================="
     rm /tmp/stderr
     rm /tmp/stdout
+    echo "Test #${i} -- running $(cat ${CASES_DIR}/testcase${i}.in)"
     exit 1
 else
     echo -e "Test #${i} PASSED\n"

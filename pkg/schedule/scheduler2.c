@@ -8,7 +8,7 @@
 #define MEMLEN 4
 #define TOTALMEM 400
 #define MEMALGO 1
-int left (datat *head)
+int left (datat *head, int time)
 {
     if (head == NULL)
     {
@@ -18,15 +18,25 @@ int left (datat *head)
     datat *data = head;
     while (data)
     {
-        count += data->remaining != 0;
+        count += data->remaining != 0 && (data->arrival <= time || time == -1);
         data = data->llNext;
     }
     return count;
 }
-int ceiling (float x)
+int round_5 (float x)
 {
     float rem = x - (int)x;
     if (rem > 0.5)
+    {
+        return 1 + x;
+    }
+    return x;
+}
+
+int ceiling (float x)
+{
+    float rem = x - (int)x;
+    if (rem)
     {
         return 1 + x;
     }
@@ -82,8 +92,8 @@ void printStats (datat *head, int time)
             min_throughput = throughput[i];
         }
     }
-    printf ("Throughput %d, %d, %d\n", ceiling (ave_throughput), min_throughput, max_throughput);
-    printf ("Turnaround time %d\n", ceiling ((float)total_turnaroundtime / (float)num));
+    printf ("Throughput %d, %d, %d\n", round_5 (ave_throughput), min_throughput, max_throughput);
+    printf ("Turnaround time %d\n", round_5 ((float)total_turnaroundtime / (float)num));
     printf ("Time overhead %.2f %.2f\n", time_overhead_max, time_overhead_total / num);
     printf ("Makespan %d\n", time);
     free (throughput);
@@ -93,7 +103,7 @@ void printStats (datat *head, int time)
 int next_helper (datat *head, enum scheduler type, int quantum, int memory_size, int time, enum memory_algorithm malgo, enum scheduler schedule)
 {
     queue *q = NewQueue ();
-    int remaining = left (head);
+    int remaining = left (head, -1);
     if (head == NULL)
     {
         return time;
@@ -117,6 +127,10 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
             {
                 break;
             }
+            // else
+            // {
+            //     time = data->arrival;
+            // }
             if (time >= data->arrival)
             {
                 addToQueue (q, data);
@@ -135,7 +149,11 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
                 loadtime = assign_memory (&memory, q, next, quantum, time, malgo);
             }
             time = apply_quantum (&memory, head, next, quantum, time, loadtime, schedule);
-            remaining = left (head);
+            remaining = left (head, -1);
+        }
+        else
+        {
+            time++;
         }
     }
     printStats (head, time);
@@ -341,8 +359,8 @@ int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time,
     }
     if (next->loadtime != 0)
     {
-        printf ("%d, RUNNING, id=%d, remaining-time=%d, load-time=%d, mem-usage=%d%%, ", time,
-                next->procid, next->remaining, loadtime, (memory->len / memory->cap) * 100);
+        printf ("%d, RUNNING, id=%d, remaining-time=%d, load-time=%d, mem-usage=%d%%, ", time, next->procid,
+                next->remaining, loadtime, ceiling (((float)memory->len / memory->cap) * 100));
         printAddresses (next->memory, next->memunits, true);
         printf ("\n");
         if (time == 240)
@@ -384,6 +402,6 @@ int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time,
     printevicted (memory, time);
     memory->num_recently_evicted = 0;
     next->finishingtime = time;
-    printf ("%d, FINISHED, id=%d, proc-remaining=%d\n", time, next->procid, left (head));
+    printf ("%d, FINISHED, id=%d, proc-remaining=%d\n", time, next->procid, left (head, time));
     return time;
 }

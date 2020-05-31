@@ -32,6 +32,6 @@ int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time,
 
 int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,int time, enum memory_algorithm malgo, enum scheduler schedule);
 
-int left(datat *head);
+int left (datat *head, int time);
 
 int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, enum memory_algorithm type);

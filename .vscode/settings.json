@@ -38,6 +38,8 @@
         "istream": "c",
         "new": "c",
         "utility": "c",
-        "cstring": "c"
+        "cstring": "c",
+        "chrono": "c",
+        "cmath": "c"
     }
 }
