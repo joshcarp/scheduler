@@ -8,115 +8,6 @@
 #include <strings.h>
 #define PAGE_LENGTH 4
 
-int left (process *head, int time)
-{
-    if (head == NULL)
-    {
-        return 0;
-    }
-    int count = 0;
-    process *data = head;
-    while (data)
-    {
-        count += data->remaining != 0 && (data->arrival <= time || time == -1);
-        data = data->llNext;
-    }
-    return count;
-}
-
-/* print_stats prints statistics on the head node*/
-void print_stats (process *head, int time)
-{
-    int intervals = (int)(((float)time / 60));
-    int *throughput = (int *)calloc (intervals, sizeof (int) * (intervals));
-    int total_turnaroundtime = 1;
-    float time_overhead_max = 0;
-    float time_overhead_total = 0;
-    float overhead;
-    int num = 0;
-    process *next = head;
-    while (next)
-    {
-        throughput[((next->finishingtime - 1) / 60)] += 1;
-        total_turnaroundtime += next->finishingtime - next->arrival;
-        overhead = (float)(next->finishingtime - next->arrival) / next->jobtime;
-        if (overhead > time_overhead_max)
-        {
-            time_overhead_max = overhead;
-        }
-        time_overhead_total += overhead;
-        num++;
-        next = next->llNext;
-    }
-    int max_throughput = -1;
-    int min_throughput = -1;
-    float ave_throughput = (float)num / intervals;
-    for (int i = 0; i < intervals; i++)
-    {
-        if (throughput[i] > max_throughput || max_throughput == -1)
-        {
-            max_throughput = throughput[i];
-        }
-        if (throughput[i] < min_throughput || min_throughput == -1)
-        {
-            min_throughput = throughput[i];
-        }
-    }
-    printf ("Throughput %.f, %d, %d\n", roundf (ave_throughput), min_throughput, max_throughput);
-    printf ("Turnaround time %.f\n", roundf ((float)total_turnaroundtime / (float)num));
-    printf ("Time overhead %.2f %.2f\n", time_overhead_max, time_overhead_total / num);
-    printf ("Makespan %d\n", time);
-    free (throughput);
-    freeData (head);
-}
-
-/* print_addresses prints all of the elements in arr that are equal to allocated */
-void print_addresses (page **arr, int n, bool allocated)
-{
-    printf ("mem-addresses=[");
-    page *temp;
-    for (int i = 0; i < n; ++i)
-    {
-        for (int j = i + 1; j < n; ++j)
-        {
-            if (arr[i] != NULL && arr[j] != NULL)
-            {
-                if (arr[i]->id > arr[j]->id)
-                {
-                    temp = arr[i];
-                    arr[i] = arr[j];
-                    arr[j] = temp;
-                }
-            }
-        }
-    }
-    char comma[3] = "";
-    for (int i = 0; i < n; i++)
-    {
-        if (arr[i]->id == -1 || arr[i]->allocated != allocated)
-        {
-            continue;
-        }
-        printf ("%s%d", comma, arr[i]->id);
-        if (i != n - 1)
-        {
-            strcpy (comma, ",");
-        }
-    }
-    printf ("]");
-}
-
-/* printevicted prints the recently evicted processes in memory */
-void printevicted (mem *memory, int time)
-{
-    if (memory->num_recently_evicted > 0)
-    {
-        printf ("%d, EVICTED, ", time);
-        print_addresses (memory->recently_evicted, memory->num_recently_evicted, false);
-        printf ("\n");
-    }
-}
-
 /* run runs the processing algorithms on head */
 int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule)
 {
@@ -177,64 +68,6 @@ int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_
     return 0;
 }
 
-/* memoryallocate allocates p in memory and returns wether the process was a success */
-bool memoryallocate (mem *memory, page *p)
-{
-    for (int i = 0; i < memory->cap; i++)
-    {
-        if (memory->pages[i] == NULL)
-        {
-            memory->pages[i] = p;
-            memory->len++;
-            p->allocated = true;
-            p->id = i;
-            return true;
-        }
-    }
-    return false;
-}
-
-/* evict_page evicts a page from memory */
-bool evict_page (mem *memory, page *next)
-{
-    if (next->allocated)
-    {
-        memory->pages[next->id] = NULL;
-        next->allocated = false;
-        memory->recently_evicted[memory->num_recently_evicted++] = next;
-        memory->len--;
-        return true;
-    }
-    return false;
-}
-
-/* evict_process evicts a process from memory */
-bool evict_process (mem *memory, process *next)
-{
-    bool success = false;
-    for (int i = 0; i < next->memory->cap; i++)
-    {
-        if (next->memory->pages[i]->allocated)
-        {
-            success = evict_page (memory, next->memory->pages[i]);
-        }
-    }
-    return success;
-}
-
-/* loaded_pages returns the amound of loaded pages */
-int loaded_pages (mem *memory)
-{
-    int loaded = 0;
-    for (int i = 0; i < memory->cap; i++)
-    {
-        if (memory->pages[i]->allocated)
-        {
-            loaded++;
-        }
-    }
-    return loaded;
-}
 
 /* assign_memory assigns memory to a process */
 int assign_memory (mem *memory, queue *q, process *next, int time, enum memory_algorithm type)
@@ -291,7 +124,7 @@ int assign_memory (mem *memory, queue *q, process *next, int time, enum memory_a
             loadtime += 2;
         }
     }
-    printevicted (memory, time);
+    print_evicted (memory, time);
     memory->num_recently_evicted = 0;
     return loadtime;
 }
@@ -337,9 +170,25 @@ int apply_quantum (mem *memory, process *head, process *next, int quantum, int t
         next->remaining = 0;
     }
     evict_process (memory, next);
-    printevicted (memory, time);
+    print_evicted (memory, time);
     memory->num_recently_evicted = 0;
     next->finishingtime = time;
     printf ("%d, FINISHED, id=%d, proc-remaining=%d\n", time, next->procid, left (head, time));
     return time;
+}
+
+int left (process *head, int time)
+{
+    if (head == NULL)
+    {
+        return 0;
+    }
+    int count = 0;
+    process *data = head;
+    while (data)
+    {
+        count += data->remaining != 0 && (data->arrival <= time || time == -1);
+        data = data->llNext;
+    }
+    return count;
 }

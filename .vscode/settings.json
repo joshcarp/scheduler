@@ -2,7 +2,7 @@
     "files.associations": {
         "dumbexample.h": "c",
         "bst.h": "c",
-        "data.h": "c",
+        "structures.h": "c",
         "stdio.h": "c",
         "limits": "c",
         "*.tcc": "c",

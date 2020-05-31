@@ -5,7 +5,7 @@
 #ifndef DATA_H
 #define DATA_H
 
-#include "../bst/data.h"
+#include "structures.h"
 #endif
 
 enum scheduler_algorithms {
@@ -24,10 +24,30 @@ enum memory_algorithm {
 
 } memory_algorithm;
 
+/* "Main" functions that do most of the heavy lifting */
 int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule);
 
 int apply_quantum (mem *memory, process *head, process *next, int quantum, int time, int loadtime, enum scheduler_algorithms type);
 
+int assign_memory (mem *memory, queue *q, process *next, int time, enum memory_algorithm type);
+
 int left (process *head, int time);
 
-int assign_memory (mem *memory, queue *q, process *next, int time, enum memory_algorithm type);
+
+/* Printing functions */
+void print_stats (process *head, int time);
+
+void print_addresses (page **arr, int n, bool allocated);
+
+void print_evicted (mem *memory, int time);
+
+/* Memory management functions */
+
+bool memoryallocate (mem *memory, page *p);
+
+bool evict_process (mem *memory, process *next);
+
+bool evict_page (mem *memory, page *next);
+
+int loaded_pages (mem *memory);
+

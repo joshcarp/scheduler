@@ -17,6 +17,8 @@ be used to offset the start of the file (ie pointer arithmetic for files)*/
 
 typedef struct page page;
 typedef struct mem mem;
+typedef struct process process;
+typedef struct queue queue;
 
 struct process{
 	int key;
@@ -32,8 +34,6 @@ struct process{
 	int last_execution_time;
 	mem *memory;
 };
-
-typedef struct process process;
 
 struct page{
 	process* parent;
@@ -55,20 +55,29 @@ struct queue{
 	int num;
 };
 
-typedef struct queue queue;
-mem *new_memory (int capacity);
-dictKey_t *NewKey();
-process *newData (char *entry);
-process *blankData();
-void printData(process*);
-void printKey(dictKey_t);
-void printFData(process*, FILE*);
-void printFAttr(process *d, FILE* outFile, char* Attr);
-void fieldFromStr(char *row, char dest[MAXFIELDNUM][MAXFIELD]);
-process* linkData(process*, process*);
-int searchData(process *,int, FILE*, char *);
-void freeData(process*);
+
+/* parsing.c  */
+void fieldFromStr (char *buff, char dest[MAXFIELDNUM][MAXFIELD]);
+
 process*  parseFile(FILE*);
+
+/* processes.c  */
+process *newData (char *entry);
+
+void freeData(process*);
+
+process *blankData();
+
+mem *new_memory (int capacity);
+
+page *new_page ();
+
+/* queue.c */
+
 queue *new_q ();
+
 void add (queue *q, process *d);
+
 process* pop (queue *q);
+
+
