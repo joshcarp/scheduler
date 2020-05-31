@@ -126,69 +126,69 @@ jobs:
         chmod u+x scheduler
     - name: Run
       run: ./scripts/test_singular.sh 7
-  # eight:
-  #   needs: make
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 3
-  #   steps:
-  #   - uses: actions/checkout@v1
-  #   - name: Download scheduler
-  #     uses: actions/download-artifact@v1
-  #     with:
-  #       name: storage
-  #   - shell: bash
-  #     run: |
-  #       mv storage/scheduler .
-  #       chmod u+x scheduler
-  #   - name: Run
-  #     run: ./scripts/test_singular.sh 8
-  # nine:
-  #   needs: make
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 3
-  #   steps:
-  #   - uses: actions/checkout@v1
-  #   - name: Download scheduler
-  #     uses: actions/download-artifact@v1
-  #     with:
-  #       name: storage
-  #   - shell: bash
-  #     run: |
-  #       mv storage/scheduler .
-  #       chmod u+x scheduler
-  #   - name: Run
-  #     run: ./scripts/test_singular.sh 9
-  # ten:
-  #   needs: make
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 3
-  #   steps:
-  #   - uses: actions/checkout@v1
-  #   - name: Download scheduler
-  #     uses: actions/download-artifact@v1
-  #     with:
-  #       name: storage
-  #   - shell: bash
-  #     run: |
-  #       mv storage/scheduler .
-  #       chmod u+x scheduler
-  #   - name: Run
-  #     run: ./scripts/test_singular.sh 10
-  # eleven:
-  #   needs: make
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 3
-  #   steps:
-  #   - uses: actions/checkout@v1
-  #   - name: Download scheduler
-  #     uses: actions/download-artifact@v1
-  #     with:
-  #       name: storage
-  #   - shell: bash
-  #     run: |
-  #       mv storage/scheduler .
-  #       chmod u+x scheduler
-  #   - name: Run
-  #     run: ./scripts/test_singular.sh 11
+  eight:
+    needs: make
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+    - uses: actions/checkout@v1
+    - name: Download scheduler
+      uses: actions/download-artifact@v1
+      with:
+        name: storage
+    - shell: bash
+      run: |
+        mv storage/scheduler .
+        chmod u+x scheduler
+    - name: Run
+      run: ./scripts/test_singular.sh 8
+  nine:
+    needs: make
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+    - uses: actions/checkout@v1
+    - name: Download scheduler
+      uses: actions/download-artifact@v1
+      with:
+        name: storage
+    - shell: bash
+      run: |
+        mv storage/scheduler .
+        chmod u+x scheduler
+    - name: Run
+      run: ./scripts/test_singular.sh 9
+  ten:
+    needs: make
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+    - uses: actions/checkout@v1
+    - name: Download scheduler
+      uses: actions/download-artifact@v1
+      with:
+        name: storage
+    - shell: bash
+      run: |
+        mv storage/scheduler .
+        chmod u+x scheduler
+    - name: Run
+      run: ./scripts/test_singular.sh 10
+  eleven:
+    needs: make
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+    - uses: actions/checkout@v1
+    - name: Download scheduler
+      uses: actions/download-artifact@v1
+      with:
+        name: storage
+    - shell: bash
+      run: |
+        mv storage/scheduler .
+        chmod u+x scheduler
+    - name: Run
+      run: ./scripts/test_singular.sh 11
   
   
