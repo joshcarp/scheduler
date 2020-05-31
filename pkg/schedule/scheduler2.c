@@ -121,6 +121,10 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
     int loadtime = 0;
     while (remaining != 0)
     {
+        if (time == 420)
+        {
+            printf ("");
+        }
         while (data)
         {
             if (time < data->arrival)
@@ -141,6 +145,10 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
         {
             addToQueue (q, next);
         }
+        else
+        {
+            next = NULL;
+        }
         next = getFromQueue (q);
         if (next != NULL)
         {
@@ -154,6 +162,10 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
         else
         {
             time++;
+            if (time == 420)
+            {
+                printf ("");
+            }
         }
     }
     printStats (head, time);
@@ -305,6 +317,10 @@ int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, en
         needed_pages = non_page_fault;
         allocated_pages = non_page_fault;
     }
+    // if (needed_pages == 0)
+    // {
+    //     return 0;
+    // }
     for (int i = 0; i < allocated_pages; i++)
     {
         page *p = next->memory[i];

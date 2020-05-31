@@ -56,6 +56,7 @@ struct mem{
 typedef struct mem mem;
 struct queue{
 	datat *front, *rear;
+	int num;
 };
 
 typedef struct queue queue;

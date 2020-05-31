@@ -177,12 +177,25 @@ queue *NewQueue ()
 {
     queue *q = (struct queue *)malloc (sizeof (struct queue));
     q->front = q->rear = NULL;
+    q->num = 0;
     return q;
 }
 
 void addToQueue (queue *q, datat *d)
 {
     struct datat *temp = d;
+    q->num++;
+
+    struct datat *t = q->front;
+    while (t)
+    {
+        // if (t == d)
+        // {
+        //     return;
+        // }
+        assert (t != d);
+        t = t->queueNext;
+    }
 
     // If queue is empty, then new node is front and rear both
     if (q->rear == NULL)
@@ -193,27 +206,24 @@ void addToQueue (queue *q, datat *d)
 
     // Add the new node at the end of queue and change rear
     q->rear->queueNext = temp;
-    temp->queuePrev = q->rear->queueNext;
     q->rear = temp;
 }
 
 datat *getFromQueue (queue *q)
 {
-    if (q->front == NULL)
+    if (q->front == NULL || q->num == 0)
     {
+        // q->front = q->rear = NULL;
         return NULL;
     }
 
     datat *temp = q->front;
     q->front = q->front->queueNext;
-    if (q->front != NULL)
-    {
-        q->front->queuePrev = NULL;
-    }
-    else
+    if (q->front == NULL)
     {
         q->rear = NULL;
     }
-
+    q->num--;
+    temp->queueNext = NULL;
     return temp;
 }
