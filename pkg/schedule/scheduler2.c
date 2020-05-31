@@ -38,7 +38,7 @@ int ceiling (float x)
     float rem = x - (int)x;
     if (rem)
     {
-        return 1 + x;
+        return 1 + (int)x;
     }
     return x;
 }
