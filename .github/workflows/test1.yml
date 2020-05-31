@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
-      - name: Download scheduler
+    - name: Download scheduler
       uses: actions/download-artifact@v1
       with:
         name: scheduler
