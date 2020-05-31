@@ -10,12 +10,12 @@
 #include "../bst/data.h"
 #endif
 
-enum scheduler {
+enum scheduler_algorithms {
     unset_scheduler = 0,
     first_come = 1,
     round_robin = 2,
     custom_schedule = 3,
-} scheduler;
+} scheduler_algorithms;
 
 enum memory_algorithm {
     unset_memory = 0,
@@ -26,11 +26,9 @@ enum memory_algorithm {
 
 } memory_algorithm;
 
-int run (datat *head, enum scheduler type, int quantum, int memory_size, enum memory_algorithm malgo, enum scheduler schedule);
+int run (datat *head, int quantum, int memory_size, enum memory_algorithm malgo, enum scheduler_algorithms schedule);
 
-int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time, int loadtime, enum scheduler type);
-
-int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,int time, enum memory_algorithm malgo, enum scheduler schedule);
+int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time, int loadtime, enum scheduler_algorithms type);
 
 int left (datat *head, int time);
 

@@ -89,7 +89,7 @@ void print_stats (datat *head, int time)
 }
 
 
-int run (datat *head, enum scheduler type, int quantum, int memory_size, enum memory_algorithm malgo, enum scheduler schedule)
+int run (datat *head, int quantum, int memory_size, enum memory_algorithm malgo, enum scheduler_algorithms schedule)
 {
     int time = 0;
     queue *q = NewQueue ();
@@ -342,7 +342,7 @@ int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, en
     return loadtime;
 }
 
-int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time, int loadtime, enum scheduler type)
+int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time, int loadtime, enum scheduler_algorithms type)
 {
     if (next->remaining == 0)
     {

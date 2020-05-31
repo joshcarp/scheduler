@@ -15,7 +15,7 @@
 int main (int argc, char **argv)
 {
     char file[200];
-    enum scheduler algorithm = unset_scheduler;
+    enum scheduler_algorithms algorithm = unset_scheduler;
     enum memory_algorithm memallocation = unset_memory;
     int memsize;
     int quantum;
@@ -73,6 +73,6 @@ int main (int argc, char **argv)
     FILE *inFile = fopen (file, "r");
     assert (inFile);
     datat *head = parseFile (inFile);
-    run (head, algorithm, quantum, memsize, memallocation, algorithm);
+    run (head, quantum, memsize, memallocation, algorithm);
     return 0;
 }
