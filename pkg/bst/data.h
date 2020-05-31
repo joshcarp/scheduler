@@ -16,11 +16,12 @@ amount of bytes of data from the start of the input file. When needing to print 
 be used to offset the start of the file (ie pointer arithmetic for files)*/
 
 typedef struct page page;
+typedef struct mem mem;
+
 struct process{
 	int key;
 	int arrival;
 	int procid;
-	int memsize;
 	int jobtime;
 	int loadtime;
 	int page_faults;
@@ -29,9 +30,9 @@ struct process{
 	struct process *llNext;
 	struct process *queueNext;
 	struct process *queuePrev;
-	page **memory;
-	int memunits;
 	int last_execution_time;
+	page **memory;
+	mem *mems;
 };
 
 typedef struct process process;
@@ -43,17 +44,14 @@ struct page{
 	int size;
 };
 
-
-
 struct mem{
-	page **memory;
+	page **pages;
 	page **recently_evicted;
 	int num_recently_evicted;
 	int cap;
 	int len;
 };
 
-typedef struct mem mem;
 struct queue{
 	process *front, *rear;
 	int num;

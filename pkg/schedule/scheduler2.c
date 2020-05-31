@@ -145,7 +145,7 @@ int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_
     }
     print_stats (head, time);
     free (q);
-    free (memory->memory);
+    free (memory->pages);
     free (memory->recently_evicted);
     free (memory);
     return 0;
@@ -153,19 +153,14 @@ int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_
 
 bool memoryallocate (mem *memory, queue *q, page *p)
 {
-    // int pageid = -1;
     for (int i = 0; i < memory->cap; i++)
     {
-        if (memory->memory[i] == NULL)
+        if (memory->pages[i] == NULL)
         {
-            memory->memory[i] = p;
+            memory->pages[i] = p;
             memory->len++;
             p->allocated = true;
             p->id = i;
-            // if (pageid == -1)
-            // {
-
-            // }
             return true;
         }
     }
@@ -176,7 +171,7 @@ bool evict_page (mem *memory, page *next)
 {
     if (next->allocated)
     {
-        memory->memory[next->id] = NULL;
+        memory->pages[next->id] = NULL;
         next->allocated = false;
         memory->recently_evicted[memory->num_recently_evicted++] = next;
         memory->len--;
@@ -188,11 +183,11 @@ bool evict_page (mem *memory, page *next)
 bool evict_process (mem *memory, process *next)
 {
     bool success = false;
-    for (int i = 0; i < next->memunits; i++)
+    for (int i = 0; i < next->mems->cap; i++)
     {
-        if (next->memory[i]->allocated)
+        if (next->mems->pages[i]->allocated)
         {
-            success = evict_page (memory, next->memory[i]);
+            success = evict_page (memory, next->mems->pages[i]);
         }
     }
     return success;
@@ -201,10 +196,10 @@ bool evict_process (mem *memory, process *next)
 
 int *getIds (process *next)
 {
-    int *ids = (int *)calloc (next->memunits, sizeof (int) * next->memunits);
-    for (int i = 0; i < next->memunits; i++)
+    int *ids = (int *)calloc (next->mems->cap, sizeof (int) * next->mems->cap);
+    for (int i = 0; i < next->mems->cap; i++)
     {
-        ids[i] = next->memory[i]->id;
+        ids[i] = next->mems->pages[i]->id;
     }
     return ids;
 }
@@ -268,10 +263,10 @@ int loaded_pages (page **arr, int n)
 // assign_memory assigns memory to a process
 int assign_memory (mem *memory, queue *q, process *next, int quantum, int time, enum memory_algorithm type)
 {
-    int loaded = loaded_pages (next->memory, next->memunits);
-    int needed_pages = next->memunits - loaded;
+    int loaded = loaded_pages (next->mems->pages, next->mems->cap);
+    int needed_pages = next->mems->cap - loaded;
     int non_page_fault = 4 - loaded;
-    int allocated_pages = next->memunits;
+    int allocated_pages = next->mems->cap;
     int loadtime = 0;
     if (type == virtual && (memory->cap - memory->len < needed_pages))
     {
@@ -281,7 +276,7 @@ int assign_memory (mem *memory, queue *q, process *next, int quantum, int time, 
     }
     for (int i = 0; i < allocated_pages; i++)
     {
-        page *p = next->memory[i];
+        page *p = next->mems->pages[i];
         if (p->allocated == false)
         {
             if (memoryallocate (memory, q, p)) // attempt to assign without evicting processes
@@ -299,15 +294,15 @@ int assign_memory (mem *memory, queue *q, process *next, int quantum, int time, 
                 {
                     if (evict_process (memory, oldest))
                     {
-                        needed_pages -= oldest->memunits;
+                        needed_pages -= oldest->mems->cap;
                         searching = false;
                     }
                 }
                 else if (type == virtual)
                 {
-                    for (int i = 0; i < oldest->memunits && needed_pages > 0; i++)
+                    for (int i = 0; i < oldest->mems->cap && needed_pages > 0; i++)
                     {
-                        if (evict_page (memory, oldest->memory[i]))
+                        if (evict_page (memory, oldest->mems->pages[i]))
                         {
                             searching = false;
                             needed_pages--;
@@ -336,7 +331,7 @@ int apply_quantum (mem *memory, process *head, process *next, int quantum, int t
     {
         printf ("%d, RUNNING, id=%d, remaining-time=%d, load-time=%d, mem-usage=%d%%, ", time, next->procid,
                 next->remaining, loadtime, ceiling (((float)memory->len / memory->cap) * (float)100));
-        printAddresses (next->memory, next->memunits, true);
+        printAddresses (next->mems->pages, next->mems->cap, true);
         printf ("\n");
         time += loadtime;
     }

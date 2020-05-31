@@ -40,14 +40,23 @@ mem *new_memory (int capacity)
     mem *memory = (mem *)malloc (sizeof (mem));
     memory->cap = capacity;
     memory->len = 0;
-    memory->memory = (page **)calloc (memory->cap, sizeof (page *));
-    assert (memory->memory);
+    memory->pages = (page **)calloc (memory->cap, sizeof (page *));
+    assert (memory->pages);
     memory->recently_evicted = (page **)calloc (memory->cap, sizeof (page *));
     assert (memory->recently_evicted);
     memory->num_recently_evicted = 0;
     return memory;
 }
 
+page *new_page ()
+{
+    page *p = (page *)malloc (sizeof (page));
+    assert (p);
+    p->allocated = false;
+    p->id = -1;
+    p->size = PAGE_LENGTH;
+    return p;
+}
 /*newData returns a process pointer with num as key */
 process *newData (char *entry)
 {
@@ -59,21 +68,14 @@ process *newData (char *entry)
     d->arrival = atoi (fields[0]);
     d->jobtime = atoi (fields[3]);
     d->procid = atoi (fields[1]);
-    d->memsize = atoi (fields[2]);
     d->remaining = d->jobtime;
     d->loadtime = 0;
     d->finishingtime = 0;
-    d->memunits = d->memsize / PAGE_LENGTH;
-    d->memory = (page **)malloc (sizeof (page *) * d->memunits);
-    assert (d->memory);
-    for (int i = 0; i < d->memunits; i++)
+    d->mems = new_memory (atoi (fields[2]) / PAGE_LENGTH);
+    for (int i = 0; i < d->mems->cap; i++)
     {
-        d->memory[i] = (page *)malloc (sizeof (page));
-        assert (d->memory[i]);
-        d->memory[i]->allocated = false;
-        d->memory[i]->id = -1;
-        d->memory[i]->parent = d;
-        d->memory[i]->size = PAGE_LENGTH;
+        d->mems->pages[i] = new_page ();
+        d->mems->pages[i]->parent = d;
     }
     return d;
 }
@@ -87,11 +89,11 @@ void freeData (process *d)
         freeData (d->llNext);
         d->llNext = NULL;
     }
-    for (int i = 0; i < d->memunits; i++)
+    for (int i = 0; i < d->mems->cap; i++)
     {
-        free (d->memory[i]);
+        free (d->mems->pages[i]);
     }
-    free (d->memory);
+    free (d->mems->pages);
     free (d);
 }
 
@@ -197,10 +199,6 @@ void add (queue *q, process *d)
     struct process *t = q->front;
     while (t)
     {
-        // if (t == d)
-        // {
-        //     return;
-        // }
         assert (t != d);
         t = t->queueNext;
     }
@@ -221,7 +219,6 @@ process *pop (queue *q)
 {
     if (q->front == NULL || q->num == 0)
     {
-        // q->front = q->rear = NULL;
         return NULL;
     }
 
