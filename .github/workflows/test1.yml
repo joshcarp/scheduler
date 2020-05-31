@@ -27,4 +27,5 @@ jobs:
       run: |
         mv storage/scheduler .
     - name: Run
+    - uses: actions/checkout@v1
       run: ls -a 
