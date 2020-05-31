@@ -13,7 +13,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: scheduler
-        path: /
+        path: scheduler
   one:
     needs: make
     runs-on: ubuntu-latest
