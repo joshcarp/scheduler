@@ -27,4 +27,4 @@ jobs:
       run: |
         mv storage/scheduler .
     - name: Run
-      run: tree
+      run: ls -a 
