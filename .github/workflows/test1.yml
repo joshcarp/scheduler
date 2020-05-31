@@ -20,12 +20,12 @@ jobs:
     timeout-minutes: 3
     steps:
     - name: Download scheduler
+    - uses: actions/checkout@v1
       uses: actions/download-artifact@v1
       with:
         name: storage
     - shell: bash
       run: |
         mv storage/scheduler .
-    - uses: actions/checkout@v1
     - name: Run
       run: ./scripts/test_singular.sh 1
