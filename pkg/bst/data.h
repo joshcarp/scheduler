@@ -69,13 +69,11 @@ void printData(datat*);
 void printKey(dictKey_t);
 void printFData(datat*, FILE*);
 void printFAttr(datat *d, FILE* outFile, char* Attr);
-// char* getField(datat *d, int fieldNum, char* dest);
 void fieldFromStr(char *row, char dest[MAXFIELDNUM][MAXFIELD]);
 datat* linkData(datat*, datat*);
 int searchData(datat *,int, FILE*, char *);
 void freeData(datat*);
-// char *fgets_noNL(char *, int, FILE *);
-
+datat*  parseFile(FILE*);
 
 queue *NewQueue ();
 

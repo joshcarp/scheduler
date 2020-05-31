@@ -1,7 +1,5 @@
 #ifndef BST_H
 #define BST_H
-
-#include "../bst/bst.h"
 #endif
 
 #ifndef DATA_H

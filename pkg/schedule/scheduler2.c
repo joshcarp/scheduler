@@ -276,26 +276,12 @@ int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, en
     int non_page_fault = 4 - loaded;
     int allocated_pages = next->memunits;
     int loadtime = 0;
-    // if (loaded >= 4 && memory->len == memory->cap)
-    // {
-
-    //     next->remaining += needed_pages;
-    //     return 0;
-    // }
-
     if (type == virtual && (memory->cap - memory->len < needed_pages))
     {
-        // next->page_faults = needed_pages - loaded;
-        // next->remaining += needed_pages - 4; // page faults
         next->remaining += needed_pages - non_page_fault; // page faults
-
         needed_pages = non_page_fault;
         allocated_pages = non_page_fault;
     }
-    // if (needed_pages == 0)
-    // {
-    //     return 0;
-    // }
     for (int i = 0; i < allocated_pages; i++)
     {
         page *p = next->memory[i];

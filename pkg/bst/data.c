@@ -4,7 +4,7 @@ data.c contains the data struct and all supporting files
 program can be changed to support completely different keys/data entries only by changing the code in this file
 */
 
-#include "bst.h"
+#include "data.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,7 +13,6 @@ program can be changed to support completely different keys/data entries only by
 #define TOTALMEM 400
 #ifndef DATA_H
 #define DATA_H
-#include "data.h"
 #endif
 
 
@@ -226,4 +225,32 @@ datat *getFromQueue (queue *q)
     q->num--;
     temp->queueNext = NULL;
     return temp;
+}
+
+// /* parseFile parses a csv file into a bst. cmd is for command line arguments*/
+datat *parseFile (FILE *file)
+{
+    char buf[MAXBUFF];
+    int buffSize = 0;
+    datat *head = NULL;
+    datat *d;
+    datat *next = NULL;
+    // While stdin, keep cumulative sum of location from start of file and parse row into the bst
+    while (fgets (buf, MAXBUFF, file) && buf[0] != '\n')
+    {
+        buffSize = strlen (buf);
+        buf[buffSize] = '\0';
+        d = newData (buf);
+        if (next == NULL)
+        {
+            next = d;
+            head = d;
+        }
+        else
+        {
+            next->llNext = d;
+            next = d;
+        }
+    }
+    return head;
 }
