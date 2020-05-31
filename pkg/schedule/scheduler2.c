@@ -146,7 +146,7 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
 
 bool memoryallocate (mem *memory, queue *q, page *p)
 {
-    int pageid = -1;
+    // int pageid = -1;
     for (int i = 0; i < memory->len; i++)
     {
         if (memory->memory[i] == NULL)
@@ -154,10 +154,11 @@ bool memoryallocate (mem *memory, queue *q, page *p)
             memory->memory[i] = p;
             memory->cap++;
             p->allocated = true;
-            if (pageid == -1)
-            {
-                p->id = i;
-            }
+            p->id = i;
+            // if (pageid == -1)
+            // {
+
+            // }
             return true;
         }
     }
@@ -204,8 +205,31 @@ int *getIds (datat *next)
 void printAddresses (page **arr, int n)
 {
     printf ("mem-addresses=[");
+    page *temp;
+    for (int i = 0; i < n; ++i)
+    {
+
+        for (int j = i + 1; j < n; ++j)
+        {
+            if (arr[i] != NULL && arr[j] != NULL)
+            {
+                if (arr[i]->id > arr[j]->id)
+                {
+                    temp = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = temp;
+                }
+            }
+        }
+    }
+
+
     for (int i = 0; i < n; i++)
     {
+        if (arr[i]->id == -1)
+        {
+            continue;
+        }
         printf ("%d", arr[i]->id);
         if (i != n - 1)
         {
@@ -223,13 +247,34 @@ void printevicted (mem *memory, int time)
         printf ("\n");
     }
 }
-
+int loaded_pages (page **arr, int n)
+{
+    int loaded = 0;
+    for (int i = 0; i < n; i++)
+    {
+        if (arr[i]->allocated)
+        {
+            loaded++;
+        }
+    }
+    return loaded;
+}
 // assign_memory assigns memory to a process
 int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, enum memory_algorithm type)
 {
-    int needed_pages = next->memunits;
+    int loaded = loaded_pages (next->memory, next->memunits);
+    int needed_pages = next->memunits - loaded;
     int allocated_pages = next->memunits;
     int loadtime = 0;
+    if (loaded >= 4 && memory->cap == memory->len)
+    {
+        return 0;
+    }
+    else if (type == virtual && memory->len - memory->cap <= 4)
+    {
+        needed_pages = 4;
+        allocated_pages = 4;
+    }
     for (int i = 0; i < allocated_pages; i++)
     {
         page *p = next->memory[i];
@@ -238,7 +283,7 @@ int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, en
             if (memoryallocate (memory, q, p)) // attempt to assign without evicting processes
             {
                 next->loadtime += 2;
-                loadtime += 2; //TODO: remove one of these
+                loadtime += 2; // TODO: remove one of these
                 continue;
             }
             datat *oldest = q->front; // the front of the queue is this process, so the one following is the last executed.
