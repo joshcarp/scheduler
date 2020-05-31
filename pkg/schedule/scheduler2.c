@@ -1,6 +1,7 @@
 
 #include "scheduler.h"
 #include <assert.h>
+#include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,26 +22,6 @@ int left (process *head, int time)
         data = data->llNext;
     }
     return count;
-}
-
-int round_5 (float x)
-{
-    float rem = x - (int)x;
-    if (rem > 0.5)
-    {
-        return 1 + x;
-    }
-    return x;
-}
-
-int ceiling (float x)
-{
-    float rem = x - (int)x;
-    if (rem)
-    {
-        return 1 + (int)x;
-    }
-    return x;
 }
 
 /* print_stats prints statistics on the head node*/
@@ -81,8 +62,8 @@ void print_stats (process *head, int time)
             min_throughput = throughput[i];
         }
     }
-    printf ("Throughput %d, %d, %d\n", round_5 (ave_throughput), min_throughput, max_throughput);
-    printf ("Turnaround time %d\n", round_5 ((float)total_turnaroundtime / (float)num));
+    printf ("Throughput %.f, %d, %d\n", roundf (ave_throughput), min_throughput, max_throughput);
+    printf ("Turnaround time %.f\n", roundf ((float)total_turnaroundtime / (float)num));
     printf ("Time overhead %.2f %.2f\n", time_overhead_max, time_overhead_total / num);
     printf ("Makespan %d\n", time);
     free (throughput);
@@ -324,8 +305,8 @@ int apply_quantum (mem *memory, process *head, process *next, int quantum, int t
     }
     if (next->loadtime != 0)
     {
-        printf ("%d, RUNNING, id=%d, remaining-time=%d, load-time=%d, mem-usage=%d%%, ", time, next->procid,
-                next->remaining, loadtime, ceiling (((float)memory->len / memory->cap) * (float)100));
+        printf ("%d, RUNNING, id=%d, remaining-time=%d, load-time=%d, mem-usage=%.f%%, ", time, next->procid,
+                next->remaining, loadtime, ceil (((float)memory->len / memory->cap) * (float)100));
         print_addresses (next->memory->pages, next->memory->cap, true);
         printf ("\n");
         time += loadtime;
