@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 #include <strings.h>
 
 #define MEMLEN 4
@@ -113,6 +114,7 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
     datat *data = head;
     mem memory;
     memory.cap = memory_size / MEMLEN;
+    memory.len = 0;
     memory.memory = (page **)calloc (memory.cap, sizeof (page *));
     assert (memory.memory);
     memory.recently_evicted = (page **)calloc (memory.cap, sizeof (page *));
@@ -121,10 +123,6 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
     int loadtime = 0;
     while (remaining != 0)
     {
-        if (time == 420)
-        {
-            printf ("");
-        }
         while (data)
         {
             if (time < data->arrival)
@@ -162,10 +160,6 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
         else
         {
             time++;
-            if (time == 420)
-            {
-                printf ("");
-            }
         }
     }
     printStats (head, time);
@@ -303,10 +297,6 @@ int assign_memory (mem *memory, queue *q, datat *next, int quantum, int time, en
     //     next->remaining += needed_pages;
     //     return 0;
     // }
-    if (time == 250)
-    {
-        printf ("");
-    }
 
     if (type == virtual && (memory->cap - memory->len < needed_pages))
     {
@@ -376,13 +366,9 @@ int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time,
     if (next->loadtime != 0)
     {
         printf ("%d, RUNNING, id=%d, remaining-time=%d, load-time=%d, mem-usage=%d%%, ", time, next->procid,
-                next->remaining, loadtime, ceiling (((float)memory->len / memory->cap) * 100));
+                next->remaining, loadtime, ceiling (((float)memory->len / memory->cap) * (float)100));
         printAddresses (next->memory, next->memunits, true);
         printf ("\n");
-        if (time == 240)
-        {
-            printf ("");
-        }
         time += loadtime;
     }
     else
@@ -409,10 +395,6 @@ int apply_quantum (mem *memory, datat *head, datat *next, int quantum, int time,
     {
         time += next->remaining;
         next->remaining = 0;
-    }
-    if (time == 250)
-    {
-        printf ("");
     }
     evict_process (memory, next);
     printevicted (memory, time);

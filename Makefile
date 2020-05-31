@@ -35,7 +35,7 @@ build-tests: $(SRCS) $(UNITYFILES) $(TESTS)
 
 ## build-main:  Builds the main programs in cmd/
 build-main: $(SRCS) $(MAINTARGETS)
-	$(foreach file, $(MAINTARGETS), $(shell gcc  -g -Wall $(file) $(SRCS) -fsanitize=address -o bin$(patsubst %.c,/%.o,$(notdir  $(file)))))
+	$(foreach file, $(MAINTARGETS), $(shell gcc  -std=c11 -lm -g -Wall $(file) $(SRCS) -fsanitize=address -o bin$(patsubst %.c,/%.o,$(notdir  $(file)))))
 
 build:
 	mv bin/scheduler.o scheduler
