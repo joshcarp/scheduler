@@ -12,7 +12,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: scheduler
-        path: scheduler
+        path: /
   one:
     needs: make
     runs-on: ubuntu-latest
@@ -22,5 +22,4 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: scheduler
-    - uses: actions/checkout@v1
       run: ./scripts/test_singular.sh 1
