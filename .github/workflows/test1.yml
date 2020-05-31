@@ -26,6 +26,6 @@ jobs:
     - shell: bash
       run: |
         mv storage/scheduler .
-    - name: Run
     - uses: actions/checkout@v1
+    - name: Run
       run: ls -a 
