@@ -12,6 +12,7 @@ jobs:
     - name: upload
       uses: actions/upload-artifact@v1
       with:
+        name: scheduler
         path: scheduler
   one:
     needs: make
@@ -22,6 +23,9 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: scheduler
+    - shell: bash
+      run: |
+        mv scheduler/scheduler .
     - uses: actions/checkout@v1
     - name: Run
       run: ./scripts/test_singular.sh 1
