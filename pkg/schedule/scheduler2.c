@@ -211,7 +211,7 @@ void printAddresses (page **arr, int n)
         printf ("%d", arr[i]->id);
         if (i != n - 1)
         {
-            printf (", ");
+            printf (",");
         }
     }
     printf ("]");
