@@ -30,4 +30,4 @@ int apply_quantum (mem *memory, process *head, process *next, int quantum, int t
 
 int left (process *head, int time);
 
-int assign_memory (mem *memory, queue *q, process *next, int quantum, int time, enum memory_algorithm type);
+int assign_memory (mem *memory, queue *q, process *next, int time, enum memory_algorithm type);

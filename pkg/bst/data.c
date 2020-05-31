@@ -15,26 +15,6 @@ program can be changed to support completely different keys/data entries only by
 #define DATA_H
 #endif
 
-
-// cmp compares keys and returns:
-//
-//   LT, or -1 if m <  n
-//   EQ, or 0 if m == n
-//   GT, or +1 if m >  n
-//
-int cmp (int m, int n)
-{
-    if (m < n)
-    {
-        return LT;
-    }
-    else if (m == n)
-    {
-        return EQ;
-    }
-    return GT;
-}
-
 mem *new_memory (int capacity)
 {
     mem *memory = (mem *)malloc (sizeof (mem));
@@ -48,6 +28,7 @@ mem *new_memory (int capacity)
     return memory;
 }
 
+/* new_page creates a new page */
 page *new_page ()
 {
     page *p = (page *)malloc (sizeof (page));
@@ -57,6 +38,7 @@ page *new_page ()
     p->size = PAGE_LENGTH;
     return p;
 }
+
 /*newData returns a process pointer with num as key */
 process *newData (char *entry)
 {
@@ -103,7 +85,6 @@ process *blankData ()
     process *d = (process *)malloc (sizeof (process));
     d->llNext = NULL;
     d->queueNext = NULL;
-    d->queuePrev = NULL;
     assert (d);
     return d;
 }

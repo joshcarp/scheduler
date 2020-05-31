@@ -29,7 +29,6 @@ struct process{
 	int finishingtime;
 	struct process *llNext;
 	struct process *queueNext;
-	struct process *queuePrev;
 	int last_execution_time;
 	mem *memory;
 };
@@ -61,7 +60,6 @@ mem *new_memory (int capacity);
 dictKey_t *NewKey();
 process *newData (char *entry);
 process *blankData();
-int cmp(int, int);
 void printData(process*);
 void printKey(dictKey_t);
 void printFData(process*, FILE*);
@@ -71,9 +69,6 @@ process* linkData(process*, process*);
 int searchData(process *,int, FILE*, char *);
 void freeData(process*);
 process*  parseFile(FILE*);
-
 queue *new_q ();
-
 void add (queue *q, process *d);
-
 process* pop (queue *q);
