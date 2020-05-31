@@ -76,6 +76,8 @@ void freeData (process *d)
         free (d->memory->pages[i]);
     }
     free (d->memory->pages);
+    free (d->memory->recently_evicted);
+    free (d->memory);
     free (d);
 }
 
