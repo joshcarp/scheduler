@@ -138,6 +138,9 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
         }
     }
     printStats (head, time);
+    free (q);
+    free (memory.memory);
+    free (memory.recently_evicted);
     return time;
 }
 
