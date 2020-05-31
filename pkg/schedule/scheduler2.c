@@ -129,7 +129,7 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
         next = getFromQueue (q);
         if (next != NULL)
         {
-            if (schedule != unlimited)
+            if (malgo != unlimited)
             {
                 time = assign_memory (&memory, q, next, quantum, time, malgo);
             }
