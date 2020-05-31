@@ -23,5 +23,6 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: scheduler
+    - uses: actions/checkout@v1
     - name: Run
       run: ./scripts/test_singular.sh 1
