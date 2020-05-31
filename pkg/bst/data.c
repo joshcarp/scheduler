@@ -9,7 +9,7 @@ program can be changed to support completely different keys/data entries only by
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define MEMLEN 4
+#define PAGE_LENGTH 4
 #define TOTALMEM 400
 #ifndef DATA_H
 #define DATA_H
@@ -55,7 +55,7 @@ datat *newData (char *entry)
     d->loadtime = 0;
     d->page_faults = 0;
     d->finishingtime = 0;
-    d->memunits = d->memsize / MEMLEN;
+    d->memunits = d->memsize / PAGE_LENGTH;
     d->memory = (page **)malloc (sizeof (page *) * d->memunits);
     assert (d->memory);
     for (int i = 0; i < d->memunits; i++)
@@ -65,7 +65,7 @@ datat *newData (char *entry)
         d->memory[i]->allocated = false;
         d->memory[i]->id = -1;
         d->memory[i]->parent = d;
-        d->memory[i]->size = MEMLEN;
+        d->memory[i]->size = PAGE_LENGTH;
     }
     return d;
 }

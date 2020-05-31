@@ -73,6 +73,6 @@ int main (int argc, char **argv)
     FILE *inFile = fopen (file, "r");
     assert (inFile);
     datat *head = parseFile (inFile);
-    next (head, algorithm, quantum, memsize, memallocation, algorithm);
+    run (head, algorithm, quantum, memsize, memallocation, algorithm);
     return 0;
 }

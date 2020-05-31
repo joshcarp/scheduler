@@ -6,9 +6,7 @@
 #include <string.h>
 #include <strings.h>
 
-#define MEMLEN 4
-#define TOTALMEM 400
-#define MEMALGO 1
+#define PAGE_LENGTH 4
 int left (datat *head, int time)
 {
     if (head == NULL)
@@ -43,19 +41,8 @@ int ceiling (float x)
     }
     return x;
 }
-int next (datat *head, enum scheduler type, int quantum, int memory_size, enum memory_algorithm malgo, enum scheduler schedule)
-{
-    int time = 0;
-    // int remaining = left (head);
-    // do
-    // {
-    time = next_helper (head, type, quantum, memory_size, time, malgo, schedule);
-    //     remaining = left (head);
-    // } while (remaining);
-    return 0;
-}
 
-void printStats (datat *head, int time)
+void print_stats (datat *head, int time)
 {
     int intervals = (int)(((float)time / 60));
     int *throughput = (int *)calloc (intervals, sizeof (int) * (intervals));
@@ -101,8 +88,10 @@ void printStats (datat *head, int time)
     freeData (head);
 }
 
-int next_helper (datat *head, enum scheduler type, int quantum, int memory_size, int time, enum memory_algorithm malgo, enum scheduler schedule)
+
+int run (datat *head, enum scheduler type, int quantum, int memory_size, enum memory_algorithm malgo, enum scheduler schedule)
 {
+    int time = 0;
     queue *q = NewQueue ();
     int remaining = left (head, -1);
     if (head == NULL)
@@ -113,7 +102,7 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
     datat *next = NULL;
     datat *data = head;
     mem memory;
-    memory.cap = memory_size / MEMLEN;
+    memory.cap = memory_size / PAGE_LENGTH;
     memory.len = 0;
     memory.memory = (page **)calloc (memory.cap, sizeof (page *));
     assert (memory.memory);
@@ -129,10 +118,6 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
             {
                 break;
             }
-            // else
-            // {
-            //     time = data->arrival;
-            // }
             if (time >= data->arrival)
             {
                 addToQueue (q, data);
@@ -162,11 +147,11 @@ int next_helper (datat *head, enum scheduler type, int quantum, int memory_size,
             time++;
         }
     }
-    printStats (head, time);
+    print_stats (head, time);
     free (q);
     free (memory.memory);
     free (memory.recently_evicted);
-    return time;
+    return 0;
 }
 
 bool memoryallocate (mem *memory, queue *q, page *p)
