@@ -83,7 +83,7 @@ void printStats (datat *head, int time)
     }
     printf ("Throughput %d, %d, %d\n", ceiling (ave_throughput), min_throughput, max_throughput);
     printf ("Turnaround time %d\n", ceiling ((float)total_turnaroundtime / (float)num));
-    printf ("Time overhead %.2f, %.2f\n", time_overhead_max, time_overhead_total / num);
+    printf ("Time overhead %.2f %.2f\n", time_overhead_max, time_overhead_total / num);
     printf ("Makespan %d\n", time);
     free (throughput);
     freeData (head);
