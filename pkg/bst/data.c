@@ -71,11 +71,11 @@ process *newData (char *entry)
     d->remaining = d->jobtime;
     d->loadtime = 0;
     d->finishingtime = 0;
-    d->mems = new_memory (atoi (fields[2]) / PAGE_LENGTH);
-    for (int i = 0; i < d->mems->cap; i++)
+    d->memory = new_memory (atoi (fields[2]) / PAGE_LENGTH);
+    for (int i = 0; i < d->memory->cap; i++)
     {
-        d->mems->pages[i] = new_page ();
-        d->mems->pages[i]->parent = d;
+        d->memory->pages[i] = new_page ();
+        d->memory->pages[i]->parent = d;
     }
     return d;
 }
@@ -89,11 +89,11 @@ void freeData (process *d)
         freeData (d->llNext);
         d->llNext = NULL;
     }
-    for (int i = 0; i < d->mems->cap; i++)
+    for (int i = 0; i < d->memory->cap; i++)
     {
-        free (d->mems->pages[i]);
+        free (d->memory->pages[i]);
     }
-    free (d->mems->pages);
+    free (d->memory->pages);
     free (d);
 }
 

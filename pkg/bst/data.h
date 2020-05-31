@@ -31,8 +31,7 @@ struct process{
 	struct process *queueNext;
 	struct process *queuePrev;
 	int last_execution_time;
-	page **memory;
-	mem *mems;
+	mem *memory;
 };
 
 typedef struct process process;

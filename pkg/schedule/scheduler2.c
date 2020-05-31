@@ -102,9 +102,7 @@ int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_
 
     process *next = NULL;
     process *data = head;
-    //
     mem *memory = new_memory (memory_size / PAGE_LENGTH);
-    //
     int loadtime = 0;
     while (remaining != 0)
     {
@@ -183,11 +181,11 @@ bool evict_page (mem *memory, page *next)
 bool evict_process (mem *memory, process *next)
 {
     bool success = false;
-    for (int i = 0; i < next->mems->cap; i++)
+    for (int i = 0; i < next->memory->cap; i++)
     {
-        if (next->mems->pages[i]->allocated)
+        if (next->memory->pages[i]->allocated)
         {
-            success = evict_page (memory, next->mems->pages[i]);
+            success = evict_page (memory, next->memory->pages[i]);
         }
     }
     return success;
@@ -196,15 +194,15 @@ bool evict_process (mem *memory, process *next)
 
 int *getIds (process *next)
 {
-    int *ids = (int *)calloc (next->mems->cap, sizeof (int) * next->mems->cap);
-    for (int i = 0; i < next->mems->cap; i++)
+    int *ids = (int *)calloc (next->memory->cap, sizeof (int) * next->memory->cap);
+    for (int i = 0; i < next->memory->cap; i++)
     {
-        ids[i] = next->mems->pages[i]->id;
+        ids[i] = next->memory->pages[i]->id;
     }
     return ids;
 }
 
-void printAddresses (page **arr, int n, bool allocated)
+void print_addresses (page **arr, int n, bool allocated)
 {
     printf ("mem-addresses=[");
     page *temp;
@@ -239,15 +237,17 @@ void printAddresses (page **arr, int n, bool allocated)
     }
     printf ("]");
 }
+
 void printevicted (mem *memory, int time)
 {
     if (memory->num_recently_evicted > 0)
     {
         printf ("%d, EVICTED, ", time);
-        printAddresses (memory->recently_evicted, memory->num_recently_evicted, false);
+        print_addresses (memory->recently_evicted, memory->num_recently_evicted, false);
         printf ("\n");
     }
 }
+
 int loaded_pages (page **arr, int n)
 {
     int loaded = 0;
@@ -260,13 +260,14 @@ int loaded_pages (page **arr, int n)
     }
     return loaded;
 }
+
 // assign_memory assigns memory to a process
 int assign_memory (mem *memory, queue *q, process *next, int quantum, int time, enum memory_algorithm type)
 {
-    int loaded = loaded_pages (next->mems->pages, next->mems->cap);
-    int needed_pages = next->mems->cap - loaded;
+    int loaded = loaded_pages (next->memory->pages, next->memory->cap);
+    int needed_pages = next->memory->cap - loaded;
     int non_page_fault = 4 - loaded;
-    int allocated_pages = next->mems->cap;
+    int allocated_pages = next->memory->cap;
     int loadtime = 0;
     if (type == virtual && (memory->cap - memory->len < needed_pages))
     {
@@ -276,7 +277,7 @@ int assign_memory (mem *memory, queue *q, process *next, int quantum, int time, 
     }
     for (int i = 0; i < allocated_pages; i++)
     {
-        page *p = next->mems->pages[i];
+        page *p = next->memory->pages[i];
         if (p->allocated == false)
         {
             if (memoryallocate (memory, q, p)) // attempt to assign without evicting processes
@@ -285,8 +286,7 @@ int assign_memory (mem *memory, queue *q, process *next, int quantum, int time, 
                 loadtime += 2; // TODO: remove one of these
                 continue;
             }
-            process *oldest =
-            q->front; // the front of the queue is this process, so the one following is the last executed.
+            process *oldest = q->front; // the front of the queue is this process
             bool searching = true;
             do
             {
@@ -294,15 +294,15 @@ int assign_memory (mem *memory, queue *q, process *next, int quantum, int time, 
                 {
                     if (evict_process (memory, oldest))
                     {
-                        needed_pages -= oldest->mems->cap;
+                        needed_pages -= oldest->memory->cap;
                         searching = false;
                     }
                 }
                 else if (type == virtual)
                 {
-                    for (int i = 0; i < oldest->mems->cap && needed_pages > 0; i++)
+                    for (int i = 0; i < oldest->memory->cap && needed_pages > 0; i++)
                     {
-                        if (evict_page (memory, oldest->mems->pages[i]))
+                        if (evict_page (memory, oldest->memory->pages[i]))
                         {
                             searching = false;
                             needed_pages--;
@@ -331,7 +331,7 @@ int apply_quantum (mem *memory, process *head, process *next, int quantum, int t
     {
         printf ("%d, RUNNING, id=%d, remaining-time=%d, load-time=%d, mem-usage=%d%%, ", time, next->procid,
                 next->remaining, loadtime, ceiling (((float)memory->len / memory->cap) * (float)100));
-        printAddresses (next->mems->pages, next->mems->cap, true);
+        print_addresses (next->memory->pages, next->memory->cap, true);
         printf ("\n");
         time += loadtime;
     }
