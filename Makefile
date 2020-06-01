@@ -44,10 +44,6 @@ build:
 clean:
 	rm -rf bin/* || true
 	rm -rf scheduler || true
-	rm processes.txt || true 
-	rm reordering.txt || true 
-	rm rr_memoryoverlap.txt || true 
-	rm timejumps.txt || true 
 
 ## test:        Runs the test runner in scripts
 test: setup run clean
