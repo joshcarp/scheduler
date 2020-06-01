@@ -51,3 +51,9 @@ bool evict_page (mem *memory, page *next);
 
 int loaded_pages (mem *memory);
 
+
+/* Math functions because the environment i was working on didn't support math.h */
+
+float ceiling (float x);
+
+float round_5 (float x);

@@ -1,7 +1,6 @@
 
 #include "scheduler.h"
 #include <assert.h>
-#include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -139,7 +138,7 @@ int apply_quantum (mem *memory, process *head, process *next, int quantum, int t
     if (next->loadtime != 0)
     {
         printf ("%d, RUNNING, id=%d, remaining-time=%d, load-time=%d, mem-usage=%.f%%, ", time, next->procid,
-                next->remaining, loadtime, ceil (((float)memory->len / memory->cap) * (float)100));
+                next->remaining, loadtime, ceiling (((float)memory->len / memory->cap) * (float)100));
         print_addresses (next->memory->pages, next->memory->cap, true);
         printf ("\n");
         time += loadtime;

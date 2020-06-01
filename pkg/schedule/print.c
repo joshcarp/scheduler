@@ -1,11 +1,9 @@
 
 #include "scheduler.h"
 #include <assert.h>
-#include <math.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h>
 
 /* print_stats prints statistics on the head node*/
 void print_stats (process *head, int time)
@@ -45,8 +43,8 @@ void print_stats (process *head, int time)
             min_throughput = throughput[i];
         }
     }
-    printf ("Throughput %.f, %d, %d\n", roundf (ave_throughput), min_throughput, max_throughput);
-    printf ("Turnaround time %.f\n", roundf ((float)total_turnaroundtime / (float)num));
+    printf ("Throughput %.f, %d, %d\n", round_5 (ave_throughput), min_throughput, max_throughput);
+    printf ("Turnaround time %.f\n", round_5 ((float)total_turnaroundtime / (float)num));
     printf ("Time overhead %.2f %.2f\n", time_overhead_max, time_overhead_total / num);
     printf ("Makespan %d\n", time);
     free (throughput);
