@@ -80,4 +80,5 @@ void add (queue *q, process *d);
 
 process* pop (queue *q);
 
+void add_sorted (queue *q, process *d, bool (*cmp)(process *d, process *t));
 

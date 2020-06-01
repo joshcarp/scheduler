@@ -22,10 +22,44 @@ void add (queue *q, process *d)
     struct process *temp = d;
     q->num++;
 
+    // If queue is empty, then new node is front and rear both
+    if (q->rear == NULL)
+    {
+        q->front = q->rear = temp;
+        return;
+    }
+
+    // Add the new node at the end of queue and change rear
+    q->rear->queueNext = temp;
+    q->rear = temp;
+}
+
+void add_sorted (queue *q, process *d, bool (*cmp) (process *d, process *t))
+{
+    struct process *temp = d;
+    q->num++;
+
     struct process *t = q->front;
+    struct process *prev = q->front;
+
     while (t)
     {
-        assert (t != d);
+        if (cmp (d, t))
+        {
+            if (t == q->front)
+            {
+                q->front = d;
+                d->queueNext = t;
+                return;
+            }
+            else
+            {
+                prev->queueNext = d;
+                d->queueNext = t;
+                return;
+            }
+        }
+        prev = t;
         t = t->queueNext;
     }
 
