@@ -7,6 +7,11 @@
 #include <strings.h>
 #define PAGE_LENGTH 4
 
+// least_remaining_time returns true if the first element has less time remaining than the second
+bool least_remaining_time (process *d, process *t)
+{
+    return (d->remaining < t->remaining);
+}
 /* run runs the processing algorithms on head */
 int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule)
 {
@@ -32,13 +37,27 @@ int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_
             }
             if (time >= data->arrival)
             {
-                add (q, data);
+                if (schedule == custom_schedule)
+                {
+                    add_sorted (q, data, least_remaining_time);
+                }
+                else
+                {
+                    add (q, data);
+                }
             }
             data = data->llNext;
         }
         if (next != NULL && next->remaining != 0)
         {
-            add (q, next);
+            if (schedule == custom_schedule)
+            {
+                add_sorted (q, next, least_remaining_time);
+            }
+            else
+            {
+                add (q, next);
+            }
         }
         else
         {

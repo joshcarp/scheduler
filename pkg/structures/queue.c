@@ -17,6 +17,7 @@ queue *new_q ()
     return q;
 }
 
+
 void add (queue *q, process *d)
 {
     struct process *temp = d;
@@ -33,6 +34,7 @@ void add (queue *q, process *d)
     q->rear->queueNext = temp;
     q->rear = temp;
 }
+
 
 void add_sorted (queue *q, process *d, bool (*cmp) (process *d, process *t))
 {
