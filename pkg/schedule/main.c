@@ -87,65 +87,89 @@ int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_
 }
 
 
+int virtual_memory (mem *memory, process *oldest, int needed_pages)
+{
+    for (int i = 0; i < oldest->memory->cap && needed_pages > 0; i++)
+    {
+        if (evict_page (memory, oldest->memory->pages[i]))
+        {
+            needed_pages--;
+        }
+    }
+    return needed_pages;
+}
+
+int swapping_memory (mem *memory, process *oldest, int needed_pages)
+{
+    if (evict_process (memory, oldest))
+    {
+        return needed_pages - oldest->memory->cap;
+    }
+    return needed_pages;
+}
 /* assign_memory assigns memory to a process */
 int assign_memory (mem *memory, queue *q, process *next, int time, enum memory_algorithm type)
 {
     int loaded = loaded_pages (next->memory);
     int needed_pages = next->memory->cap - loaded;
-    int non_page_fault = 4 - loaded;
+    int needed_pages2 = 0;
+    // int non_page_fault = 4 - loaded;
     int allocated_pages = next->memory->cap;
     int loadtime = 0;
-    if (type == virtual && (memory->cap - memory->len < needed_pages))
+    // if (type == virtual && (memory->cap - memory->len < needed_pages))
+    // {
+    //     next->remaining += needed_pages - non_page_fault; // page faults
+    //     needed_pages = non_page_fault;
+    //     allocated_pages = non_page_fault;
+    // }
+    if (type == virtual && needed_pages > 4)
     {
-        next->remaining += needed_pages - non_page_fault; // page faults
-        needed_pages = non_page_fault;
-        allocated_pages = non_page_fault;
+        loadtime += 4 - loaded;
+        needed_pages = 4;
     }
+    process *oldest = q->front; // the front of the queue is this process
+
+    while (needed_pages > 0 && oldest)
+    {
+        switch (type)
+        {
+        case swapping:
+            needed_pages = swapping_memory (memory, oldest, needed_pages);
+        case virtual:
+            needed_pages = virtual_memory (memory, oldest, needed_pages);
+        default:
+            break;
+        }
+        oldest = oldest->queueNext;
+    }
+
     for (int i = 0; i < allocated_pages; i++)
     {
         page *p = next->memory->pages[i];
-        if (p->allocated == false)
+        if (p->allocated)
         {
-            if (memoryallocate (memory, p)) // attempt to assign without evicting processes
-            {
-                next->loadtime += 2;
-                loadtime += 2; // TODO: remove one of these
-                continue;
-            }
-            process *oldest = q->front; // the front of the queue is this process
-            bool searching = true;
-            do
-            {
-                if (type == swapping) // swapping
-                {
-                    if (evict_process (memory, oldest))
-                    {
-                        needed_pages -= oldest->memory->cap;
-                        searching = false;
-                    }
-                }
-                else if (type == virtual)
-                {
-                    for (int i = 0; i < oldest->memory->cap && needed_pages > 0; i++)
-                    {
-                        if (evict_page (memory, oldest->memory->pages[i]))
-                        {
-                            searching = false;
-                            needed_pages--;
-                        }
-                    }
-                }
-                oldest = oldest->queueNext;
-            } while (needed_pages > 0 && searching && oldest != NULL);
-            assert (memoryallocate (memory, p));
+            continue;
+        }
+
+        if (memoryallocate (memory, p)) // attempt to assign without evicting processes
+        {
             next->loadtime += 2;
-            loadtime += 2;
+            loadtime += 2; // TODO: remove one of these
+            continue;
+        }
+        else
+        {
+            // memoryallocate (memory, p);
+            // next->loadtime += 2;
+            // loadtime += 2; // TODO: remove one of these
         }
     }
+
     print_evicted (memory, time);
     memory->num_recently_evicted = 0;
     return loadtime;
 }
+
 
 /* apply_quantum applies a quantum to a process */
 int apply_quantum (mem *memory, process *head, process *next, int quantum, int time, int loadtime, enum scheduler_algorithms type)
