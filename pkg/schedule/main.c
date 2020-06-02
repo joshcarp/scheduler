@@ -16,12 +16,13 @@ bool least_remaining_time (process *d, process *t)
 int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule)
 {
     int time = 0;
-    queue *q = new_q ();
     int remaining = left (head, -1);
+    int loadtime = 0;
+    queue *q = new_q ();
     process *next = NULL;
     process *data = head;
     mem *memory = new_memory (memory_size / PAGE_LENGTH);
-    int loadtime = 0;
+
 
     /* Use a function pointer to determine which type of insert we're gonna do */
     bool (*sorting_func) (process * d, process * t) = NULL;
