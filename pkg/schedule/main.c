@@ -87,7 +87,7 @@ int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_
                 time += loadtime;
             }
             time = apply_quantum (memory, head, next, quantum, time, schedule);
-            remaining = left (head, -1);
+            remaining -= next != NULL && next->remaining == 0;
         }
         else
         {
