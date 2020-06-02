@@ -22,7 +22,8 @@ process *newData (char *entry)
     d->procid = atoi (fields[1]);
     d->remaining = d->jobtime;
     d->loadtime = 0;
-    d->finishingtime = 0;
+    d->last_execution_time = 0;
+    d->last_execution_time = 0;
     d->memory = new_memory (atoi (fields[2]) / PAGE_LENGTH);
     for (int i = 0; i < d->memory->cap; i++)
     {

@@ -6,12 +6,20 @@
 #include <string.h>
 #include <strings.h>
 #define PAGE_LENGTH 4
+#define OLD_WEIGHT 0.1
 
-// least_remaining_time returns true if the first element has less time remaining than the second
+
+/* least_remaining_time returns true if the first element has less time remaining than the second, but also puts
+   a weight to how long a process has lasted, so that every job will eventually finish */
 bool least_remaining_time (process *d, process *t)
 {
-    return (d->remaining < t->remaining);
+    int time = d->arrival > d->last_execution_time ?
+               d->arrival :
+               d->last_execution_time; // time is either arrival or last_execution_time
+
+    return (d->remaining + OLD_WEIGHT * (time - d->arrival) < t->remaining + OLD_WEIGHT * (time - t->arrival));
 }
+
 /* run runs the processing algorithms on head */
 int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule)
 {
@@ -158,6 +166,7 @@ int apply_quantum (mem *memory, process *head, process *next, int quantum, int t
     {
         time += quantum;
         next->remaining -= quantum;
+        next->last_execution_time = time;
         return time;
     }
     else if (quantum == next->remaining)
@@ -173,7 +182,7 @@ int apply_quantum (mem *memory, process *head, process *next, int quantum, int t
     evict_process (memory, next);
     print_evicted (memory, time);
     memory->num_recently_evicted = 0;
-    next->finishingtime = time;
+    next->last_execution_time = time;
     printf ("%d, FINISHED, id=%d, proc-remaining=%d\n", time, next->procid, left (head, time));
     return time;
 }

@@ -1,0 +1,8 @@
+Customised Scheduling:
+- Jobs with the least remaining time will be prioritised over longer jobs
+    - good when there are some of small jobs inbetween large jobs
+    - bad when there are too many small jobs inbetween large jobs; in this case large jobs will never finish
+Customised Memory:
+- Jobs that have the longest time remaining will be evicted first
+ - good when there are lots of small jobs, which will mean that they don't get evicted
+ - bad when there are too many small jobs inbetween large jobs

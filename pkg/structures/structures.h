@@ -28,10 +28,9 @@ struct process{
 	int loadtime;
 	int page_faults;
 	int remaining;
-	int finishingtime;
+	int last_execution_time;
 	struct process *llNext;
 	struct process *queueNext;
-	int last_execution_time;
 	mem *memory;
 };
 

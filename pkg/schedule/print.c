@@ -18,9 +18,9 @@ void print_stats (process *head, int time)
     process *next = head;
     while (next)
     {
-        throughput[((next->finishingtime - 1) / 60)] += 1;
-        total_turnaroundtime += next->finishingtime - next->arrival;
-        overhead = (float)(next->finishingtime - next->arrival) / next->jobtime;
+        throughput[((next->last_execution_time - 1) / 60)] += 1;
+        total_turnaroundtime += next->last_execution_time - next->arrival;
+        overhead = (float)(next->last_execution_time - next->arrival) / next->jobtime;
         if (overhead > time_overhead_max)
         {
             time_overhead_max = overhead;
