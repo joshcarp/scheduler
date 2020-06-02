@@ -27,9 +27,9 @@ enum memory_algorithm {
 /* "Main" functions that do most of the heavy lifting */
 int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule);
 
-int apply_quantum (mem *memory, process *head, process *next, int quantum, int time, int loadtime, enum scheduler_algorithms type);
+int apply_quantum (mem *memory, process *head, process *next, int quantum, int time, enum scheduler_algorithms type);
 
-int assign_memory (mem *memory, queue *q, process *next, int time, enum memory_algorithm type);
+int assign_memory (mem *memory, queue *q, process *next, int time, int (*evict) (mem *, process *, int));
 
 int left (process *head, int time);
 
@@ -50,6 +50,15 @@ bool evict_process (mem *memory, process *next);
 bool evict_page (mem *memory, page *next);
 
 int loaded_pages (mem *memory);
+
+int virtual_memory_evict (mem *memory, process *head, int needed_pages);
+
+int swapping_memory_evict (mem *memory, process *head, int needed_pages);
+
+int custom_memory_evict (mem *memory, process *head, int needed_pages);
+
+int evict_upto (mem *memory, mem *to_evict, int needed_pages);
+
 
 
 /* Math functions because the environment i was working on didn't support math.h */

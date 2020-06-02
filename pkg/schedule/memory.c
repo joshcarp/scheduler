@@ -45,6 +45,7 @@ bool evict_process (mem *memory, process *next)
         if (next->memory->pages[i]->allocated)
         {
             success = evict_page (memory, next->memory->pages[i]);
+            next->memory->len -= success;
         }
     }
     return success;
@@ -62,4 +63,66 @@ int loaded_pages (mem *memory)
         }
     }
     return loaded;
+}
+
+
+/* evict_upto evicts needed pages from to_evict */
+int evict_upto (mem *memory, mem *to_evict, int needed_pages)
+{
+    for (int i = 0; i < to_evict->cap && needed_pages > 0; i++)
+    {
+        if (evict_page (memory, to_evict->pages[i]))
+        {
+            needed_pages--;
+            to_evict->len--;
+        }
+    }
+    return needed_pages;
+}
+
+/* virtual_memory_evict takes in a head of the queue and evicts upto needed_pages from the oldest process*/
+int virtual_memory_evict (mem *memory, process *head, int needed_pages)
+{
+    while (head && needed_pages > 0)
+    {
+        needed_pages = evict_upto (memory, head->memory, needed_pages);
+        head = head->queueNext;
+    }
+    return needed_pages;
+}
+
+
+/* swapping_memory_evict evicts the current program from memory */
+int swapping_memory_evict (mem *memory, process *head, int needed_pages)
+{
+    while (head && needed_pages > 0)
+    {
+        if (evict_process (memory, head))
+        {
+            needed_pages -= head->memory->cap;
+        }
+        head = head->queueNext;
+    }
+    return needed_pages;
+}
+
+/* custom_memory_evict evicts the command which has the longest time to complete */
+int custom_memory_evict (mem *memory, process *head, int needed_pages)
+{
+    process *longest_left = NULL;
+    while (needed_pages > 0)
+    {
+        longest_left = head;
+        process *oldest = head;
+        while (oldest)
+        {
+            if ((longest_left->remaining < oldest->remaining && oldest->memory->len < oldest->memory->cap))
+            {
+                longest_left = oldest;
+            }
+            oldest = oldest->queueNext;
+        }
+        needed_pages = evict_upto (memory, longest_left->memory, needed_pages);
+    }
+    return needed_pages;
 }

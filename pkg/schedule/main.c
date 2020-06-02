@@ -18,15 +18,36 @@ int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_
     int time = 0;
     queue *q = new_q ();
     int remaining = left (head, -1);
-    if (head == NULL)
-    {
-        return time;
-    }
-
     process *next = NULL;
     process *data = head;
     mem *memory = new_memory (memory_size / PAGE_LENGTH);
     int loadtime = 0;
+
+    /* Use a function pointer to determine which type of insert we're gonna do */
+    bool (*sorting_func) (process * d, process * t) = NULL;
+    if (schedule == custom_schedule)
+    {
+        sorting_func = least_remaining_time;
+    }
+
+    /* This determines which function will be used by the memory manager */
+    int (*eviction_function) (mem * memory, process * head, int needed_pages);
+    switch (mem_algo)
+    {
+    case swapping:
+        eviction_function = swapping_memory_evict;
+        break;
+    case virtual:
+        eviction_function = virtual_memory_evict;
+        break;
+    case custom_memory:
+        eviction_function = custom_memory_evict;
+        break;
+    default:
+        break;
+    }
+
+    /*  */
     while (remaining != 0)
     {
         while (data)
@@ -37,40 +58,34 @@ int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_
             }
             if (time >= data->arrival)
             {
-                if (schedule == custom_schedule)
-                {
-                    add_sorted (q, data, least_remaining_time);
-                }
-                else
-                {
-                    add (q, data);
-                }
+                add_sorted (q, data, sorting_func);
             }
             data = data->llNext;
         }
         if (next != NULL && next->remaining != 0)
         {
-            if (schedule == custom_schedule)
-            {
-                add_sorted (q, next, least_remaining_time);
-            }
-            else
-            {
-                add (q, next);
-            }
-        }
-        else
-        {
-            next = NULL;
+            add_sorted (q, next, sorting_func);
         }
         next = pop (q);
         if (next != NULL)
         {
-            if (mem_algo != unlimited)
+            if (mem_algo == unlimited)
             {
-                loadtime = assign_memory (memory, q, next, time, mem_algo);
+                printf ("%d, RUNNING, id=%d, remaining-time=%d\n", time, next->procid, next->remaining);
             }
-            time = apply_quantum (memory, head, next, quantum, time, loadtime, schedule);
+            else
+            {
+                loadtime = assign_memory (memory, q, next, time, eviction_function);
+                printf ("%d, RUNNING, ", time);
+                printf ("id=%d, ", next->procid);
+                printf ("remaining-time=%d, ", next->remaining);
+                printf ("load-time=%d, ", loadtime);
+                printf ("mem-usage=%.f%%, ", ceiling (((float)memory->len / memory->cap) * (float)100));
+                print_addresses (next->memory->pages, next->memory->cap, true);
+                printf ("\n");
+                time += loadtime;
+            }
+            time = apply_quantum (memory, head, next, quantum, time, schedule);
             remaining = left (head, -1);
         }
         else
@@ -87,109 +102,52 @@ int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_
 }
 
 
-int virtual_memory (mem *memory, process *oldest, int needed_pages)
-{
-    for (int i = 0; i < oldest->memory->cap && needed_pages > 0; i++)
-    {
-        if (evict_page (memory, oldest->memory->pages[i]))
-        {
-            needed_pages--;
-        }
-    }
-    return needed_pages;
-}
-
-int swapping_memory (mem *memory, process *oldest, int needed_pages)
-{
-    if (evict_process (memory, oldest))
-    {
-        return needed_pages - oldest->memory->cap;
-    }
-    return needed_pages;
-}
 /* assign_memory assigns memory to a process */
-int assign_memory (mem *memory, queue *q, process *next, int time, enum memory_algorithm type)
+int assign_memory (mem *memory, queue *q, process *next, int time, int (*evict) (mem *, process *, int))
 {
     int loaded = loaded_pages (next->memory);
-    int needed_pages = next->memory->cap - loaded;
-    int needed_pages2 = 0;
-    // int non_page_fault = 4 - loaded;
-    int allocated_pages = next->memory->cap;
+    int to_be_evicted = next->memory->cap - loaded;
+    int to_be_allocated = next->memory->cap;
     int loadtime = 0;
-    // if (type == virtual && (memory->cap - memory->len < needed_pages))
-    // {
-    //     next->remaining += needed_pages - non_page_fault; // page faults
-    //     needed_pages = non_page_fault;
-    //     allocated_pages = non_page_fault;
-    // }
-    if (type == virtual && needed_pages > 4)
-    {
-        loadtime += 4 - loaded;
-        needed_pages = 4;
-    }
-    process *oldest = q->front; // the front of the queue is this process
 
-    while (needed_pages > 0 && oldest)
+    // if there's not enough space in out memory, then we need to only get 4 pages loaded (the rest are page faults)
+    if (evict != swapping_memory_evict && memory->cap - memory->len < to_be_evicted)
     {
-        switch (type)
-        {
-        case swapping:
-            needed_pages = swapping_memory (memory, oldest, needed_pages);
-        case virtual:
-            needed_pages = virtual_memory (memory, oldest, needed_pages);
-        default:
-            break;
-        }
-        oldest = oldest->queueNext;
+        int limit = 4 - loaded;
+        next->remaining += to_be_evicted - limit; // page faults;
+        to_be_evicted = limit;
+        to_be_allocated = limit;
     }
 
-    for (int i = 0; i < allocated_pages; i++)
+    if (memory->cap - memory->len < to_be_evicted) // if there isn't enough space, then we need to find enough space
+    {
+        to_be_evicted = evict (memory, q->front, to_be_evicted);
+    }
+
+    int allocated = 0;
+    for (int i = 0; i < next->memory->cap && allocated < to_be_allocated; i++)
     {
         page *p = next->memory->pages[i];
         if (p->allocated)
         {
             continue;
         }
-
-        if (memoryallocate (memory, p)) // attempt to assign without evicting processes
+        if (memoryallocate (memory, p))
         {
+            next->memory->len++;
             next->loadtime += 2;
-            loadtime += 2; // TODO: remove one of these
-            continue;
-        }
-        else
-        {
-            // memoryallocate (memory, p);
-            // next->loadtime += 2;
-            // loadtime += 2; // TODO: remove one of these
+            loadtime += 2;
+            allocated++;
         }
     }
-
     print_evicted (memory, time);
     memory->num_recently_evicted = 0;
     return loadtime;
 }
 
-
 /* apply_quantum applies a quantum to a process */
-int apply_quantum (mem *memory, process *head, process *next, int quantum, int time, int loadtime, enum scheduler_algorithms type)
+int apply_quantum (mem *memory, process *head, process *next, int quantum, int time, enum scheduler_algorithms type)
 {
-    if (next->remaining == 0)
-    {
-        return time;
-    }
-    if (next->loadtime != 0)
-    {
-        printf ("%d, RUNNING, id=%d, remaining-time=%d, load-time=%d, mem-usage=%.f%%, ", time, next->procid,
-                next->remaining, loadtime, ceiling (((float)memory->len / memory->cap) * (float)100));
-        print_addresses (next->memory->pages, next->memory->cap, true);
-        printf ("\n");
-        time += loadtime;
-    }
-    else
-    {
-        printf ("%d, RUNNING, id=%d, remaining-time=%d\n", time, next->procid, next->remaining);
-    }
     if (type == first_come)
     {
         time += next->remaining;

@@ -43,26 +43,28 @@ void add_sorted (queue *q, process *d, bool (*cmp) (process *d, process *t))
 
     struct process *t = q->front;
     struct process *prev = q->front;
-
-    while (t)
+    if (cmp != NULL)
     {
-        if (cmp (d, t))
+        while (t)
         {
-            if (t == q->front)
+            if (cmp (d, t))
             {
-                q->front = d;
-                d->queueNext = t;
-                return;
+                if (t == q->front)
+                {
+                    q->front = d;
+                    d->queueNext = t;
+                    return;
+                }
+                else
+                {
+                    prev->queueNext = d;
+                    d->queueNext = t;
+                    return;
+                }
             }
-            else
-            {
-                prev->queueNext = d;
-                d->queueNext = t;
-                return;
-            }
+            prev = t;
+            t = t->queueNext;
         }
-        prev = t;
-        t = t->queueNext;
     }
 
     // If queue is empty, then new node is front and rear both
