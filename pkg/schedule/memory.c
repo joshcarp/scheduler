@@ -81,7 +81,7 @@ int evict_upto (mem *memory, mem *to_evict, int needed_pages)
 }
 
 /* virtual_memory_evict takes in a head of the queue and evicts upto needed_pages from the oldest process*/
-int virtual_memory_evict (mem *memory, process *head, int needed_pages)
+uint virtual_memory_evict (mem *memory, process *head, uint needed_pages)
 {
     while (head && needed_pages > 0)
     {
@@ -93,7 +93,7 @@ int virtual_memory_evict (mem *memory, process *head, int needed_pages)
 
 
 /* swapping_memory_evict evicts the current program from memory */
-int swapping_memory_evict (mem *memory, process *head, int needed_pages)
+uint swapping_memory_evict (mem *memory, process *head, uint needed_pages)
 {
     while (head && needed_pages > 0)
     {
@@ -107,7 +107,7 @@ int swapping_memory_evict (mem *memory, process *head, int needed_pages)
 }
 
 /* custom_memory_evict evicts the command which has the longest time to complete */
-int custom_memory_evict (mem *memory, process *head, int needed_pages)
+uint custom_memory_evict (mem *memory, process *head, uint needed_pages)
 {
     process *longest_left = NULL;
     while (needed_pages > 0)

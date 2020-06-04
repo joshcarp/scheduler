@@ -40,7 +40,7 @@ int run (process *head, int quantum, uint memory_size, enum memory_algorithm mem
     }
 
     /* This determines which function will be used by the memory manager */
-    int (*eviction_function) (mem * memory, process * head, int needed_pages);
+    uint (*eviction_function) (mem * memory, process * head, uint needed_pages);
     switch (mem_algo)
     {
     case swapping:
@@ -112,7 +112,7 @@ int run (process *head, int quantum, uint memory_size, enum memory_algorithm mem
 
 
 /* assign_memory assigns memory to a process */
-uint assign_memory (mem *memory, queue *q, process *next, uint time, int (*evict) (mem *, process *, int))
+uint assign_memory (mem *memory, queue *q, process *next, uint time, uint (*evict) (mem *, process *, uint))
 {
     uint loaded = loaded_pages (next->memory);
     uint to_be_evicted = next->memory->cap - loaded;
@@ -157,7 +157,7 @@ uint assign_memory (mem *memory, queue *q, process *next, uint time, int (*evict
 /* apply_quantum applies a quantum to a process */
 int apply_quantum (mem *memory, process *head, process *next, uint quantum, uint time, enum scheduler_algorithms type)
 {
-    if (type == first_come)
+    if (type == first_come || type == custom_schedule)
     {
         time += next->remaining;
         next->remaining = 0;

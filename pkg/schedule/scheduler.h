@@ -29,7 +29,7 @@ int run (process *head, int quantum, uint memory_size, enum memory_algorithm mem
 
 int apply_quantum (mem *memory, process *head, process *next, uint quantum, uint time, enum scheduler_algorithms type);
 
-uint assign_memory (mem *memory, queue *q, process *next, uint time, int (*evict) (mem *, process *, int));
+uint assign_memory (mem *memory, queue *q, process *next, uint time, uint (*evict) (mem *, process *, uint));
 
 uint left (process *head, uint time);
 
@@ -51,11 +51,11 @@ bool evict_page (mem *memory, page *next);
 
 int loaded_pages (mem *memory);
 
-int virtual_memory_evict (mem *memory, process *head, int needed_pages);
+uint virtual_memory_evict (mem *memory, process *head, uint needed_pages);
 
-int swapping_memory_evict (mem *memory, process *head, int needed_pages);
+uint swapping_memory_evict (mem *memory, process *head, uint needed_pages);
 
-int custom_memory_evict (mem *memory, process *head, int needed_pages);
+uint custom_memory_evict (mem *memory, process *head, uint needed_pages);
 
 int evict_upto (mem *memory, mem *to_evict, int needed_pages);
 
