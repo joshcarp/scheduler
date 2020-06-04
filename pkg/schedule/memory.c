@@ -8,7 +8,7 @@
 /* memoryallocate allocates p in memory and returns wether the process was a success */
 bool memoryallocate (mem *memory, page *p)
 {
-    for (int i = 0; i < memory->cap; i++)
+    for (uint i = 0; i < memory->cap; i++)
     {
         if (memory->pages[i] == NULL)
         {
@@ -40,7 +40,7 @@ bool evict_page (mem *memory, page *next)
 bool evict_process (mem *memory, process *next)
 {
     bool success = false;
-    for (int i = 0; i < next->memory->cap; i++)
+    for (uint i = 0; i < next->memory->cap; i++)
     {
         if (next->memory->pages[i]->allocated)
         {
@@ -55,7 +55,7 @@ bool evict_process (mem *memory, process *next)
 int loaded_pages (mem *memory)
 {
     int loaded = 0;
-    for (int i = 0; i < memory->cap; i++)
+    for (uint i = 0; i < memory->cap; i++)
     {
         if (memory->pages[i]->allocated)
         {
@@ -69,7 +69,7 @@ int loaded_pages (mem *memory)
 /* evict_upto evicts needed pages from to_evict */
 int evict_upto (mem *memory, mem *to_evict, int needed_pages)
 {
-    for (int i = 0; i < to_evict->cap && needed_pages > 0; i++)
+    for (uint i = 0; i < to_evict->cap && needed_pages > 0; i++)
     {
         if (evict_page (memory, to_evict->pages[i]))
         {

@@ -52,13 +52,13 @@ void print_stats (process *head, int time)
 }
 
 /* print_addresses prints all of the elements in arr that are equal to allocated */
-void print_addresses (page **arr, unsigned int n, bool allocated)
+void print_addresses (page **arr, uint n, bool allocated)
 {
     printf ("mem-addresses=[");
     page *temp;
-    for (unsigned int i = 0; i < n; ++i)
+    for (uint i = 0; i < n; ++i)
     {
-        for (unsigned int j = i + 1; j < n; ++j)
+        for (uint j = i + 1; j < n; ++j)
         {
             if (arr[i] != NULL && arr[j] != NULL)
             {
@@ -72,7 +72,7 @@ void print_addresses (page **arr, unsigned int n, bool allocated)
         }
     }
     char comma[3] = "";
-    for (unsigned int i = 0; i < n; i++)
+    for (uint i = 0; i < n; i++)
     {
         if (arr[i]->allocated != allocated)
         {

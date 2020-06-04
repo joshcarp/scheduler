@@ -12,8 +12,8 @@ int main (int argc, char **argv)
     char file[200];
     enum scheduler_algorithms algorithm = unset_scheduler;
     enum memory_algorithm memallocation = unset_memory;
-    int memsize;
-    int quantum;
+    uint memsize;
+    uint quantum;
     int c;
 
     while ((c = getopt (argc, argv, "f:a:m:s:q:")) != -1)

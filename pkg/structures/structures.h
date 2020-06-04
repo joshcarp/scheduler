@@ -19,15 +19,16 @@ typedef struct page page;
 typedef struct mem mem;
 typedef struct process process;
 typedef struct queue queue;
+typedef unsigned int uint;
 struct process{
 	int key;
-	unsigned int arrival;
-	unsigned int procid;
-	unsigned int jobtime;
-	unsigned int loadtime;
-	unsigned int page_faults;
-	unsigned int remaining;
-	unsigned int last_execution_time;
+	uint arrival;
+	uint procid;
+	uint jobtime;
+	uint loadtime;
+	uint page_faults;
+	uint remaining;
+	uint last_execution_time;
 	struct process *llNext;
 	struct process *queueNext;
 	mem *memory;
@@ -36,16 +37,16 @@ struct process{
 struct page{
 	process* parent;
 	bool allocated;
-	unsigned int id;
-	unsigned int size;
+	uint id;
+	uint size;
 };
 
 struct mem{
 	page **pages;
 	page **recently_evicted;
-	int num_recently_evicted;
-	int cap;
-	int len;
+	uint num_recently_evicted;
+	uint cap;
+	uint len;
 };
 
 struct queue{
@@ -66,7 +67,7 @@ void freeData(process*);
 
 process *blankData();
 
-mem *new_memory (int capacity);
+mem *new_memory (uint capacity);
 
 page *new_page ();
 

@@ -25,19 +25,19 @@ enum memory_algorithm {
 } memory_algorithm;
 
 /* "Main" functions that do most of the heavy lifting */
-int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule);
+int run (process *head, int quantum, uint memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule);
 
-int apply_quantum (mem *memory, process *head, process *next, unsigned int quantum, unsigned int time, enum scheduler_algorithms type);
+int apply_quantum (mem *memory, process *head, process *next, uint quantum, uint time, enum scheduler_algorithms type);
 
-int assign_memory (mem *memory, queue *q, process *next, int time, int (*evict) (mem *, process *, int));
+uint assign_memory (mem *memory, queue *q, process *next, uint time, int (*evict) (mem *, process *, int));
 
-unsigned int left (process *head, unsigned int time);
+uint left (process *head, uint time);
 
 
 /* Printing functions */
 void print_stats (process *head, int time);
 
-void print_addresses (page **arr, unsigned int n, bool allocated);
+void print_addresses (page **arr, uint n, bool allocated);
 
 void print_evicted (mem *memory, int time);
 

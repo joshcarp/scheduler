@@ -17,15 +17,15 @@ process *newData (char *entry)
     process *d = blankData ();
     d->llNext = NULL;
     d->queueNext = NULL;
-    d->arrival = (unsigned int)atol (fields[0]);
-    d->jobtime = (unsigned int)atol (fields[3]);
-    d->procid = (unsigned int)atol (fields[1]);
+    d->arrival = (uint)atol (fields[0]);
+    d->jobtime = (uint)atol (fields[3]);
+    d->procid = (uint)atol (fields[1]);
     d->remaining = d->jobtime;
     d->loadtime = 0;
     d->last_execution_time = 0;
     d->last_execution_time = 0;
     d->memory = new_memory (atol (fields[2]) / PAGE_LENGTH);
-    for (int i = 0; i < d->memory->cap; i++)
+    for (uint i = 0; i < d->memory->cap; i++)
     {
         d->memory->pages[i] = new_page ();
         d->memory->pages[i]->parent = d;
@@ -42,7 +42,7 @@ void freeData (process *d)
         freeData (d->llNext);
         d->llNext = NULL;
     }
-    for (int i = 0; i < d->memory->cap; i++)
+    for (uint i = 0; i < d->memory->cap; i++)
     {
         free (d->memory->pages[i]);
     }
@@ -63,7 +63,7 @@ process *blankData ()
     return d;
 }
 
-mem *new_memory (int capacity)
+mem *new_memory (uint capacity)
 {
     mem *memory = (mem *)malloc (sizeof (mem));
     memory->cap = capacity;

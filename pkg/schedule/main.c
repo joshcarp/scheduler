@@ -13,19 +13,19 @@
    a weight to how long a process has lasted, so that every job will eventually finish */
 bool least_remaining_time (process *d, process *t)
 {
-    int time = d->arrival > d->last_execution_time ?
-               d->arrival :
-               d->last_execution_time; // time is either arrival or last_execution_time
+    uint time = d->arrival > d->last_execution_time ?
+                d->arrival :
+                d->last_execution_time; // time is either arrival or last_execution_time
 
     return (d->remaining + OLD_WEIGHT * (time - d->arrival) < t->remaining + OLD_WEIGHT * (time - t->arrival));
 }
 
 /* run runs the processing algorithms on head */
-int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule)
+int run (process *head, int quantum, uint memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule)
 {
-    unsigned int time = 0;
-    int remaining = left (head, -1);
-    unsigned int loadtime = 0;
+    uint time = 0;
+    uint remaining = left (head, -1);
+    uint loadtime = 0;
     queue *q = new_q ();
     process *next = NULL;
     process *data = head;
@@ -112,12 +112,12 @@ int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_
 
 
 /* assign_memory assigns memory to a process */
-int assign_memory (mem *memory, queue *q, process *next, int time, int (*evict) (mem *, process *, int))
+uint assign_memory (mem *memory, queue *q, process *next, uint time, int (*evict) (mem *, process *, int))
 {
-    int loaded = loaded_pages (next->memory);
-    int to_be_evicted = next->memory->cap - loaded;
-    int to_be_allocated = next->memory->cap;
-    int loadtime = 0;
+    uint loaded = loaded_pages (next->memory);
+    uint to_be_evicted = next->memory->cap - loaded;
+    uint to_be_allocated = next->memory->cap;
+    uint loadtime = 0;
 
     // if there's not enough space in out memory, then we need to only get 4 pages loaded (the rest are page faults)
     if (evict != swapping_memory_evict && memory->cap - memory->len < to_be_evicted)
@@ -133,8 +133,8 @@ int assign_memory (mem *memory, queue *q, process *next, int time, int (*evict) 
         to_be_evicted = evict (memory, q->front, to_be_evicted);
     }
 
-    int allocated = 0;
-    for (int i = 0; i < next->memory->cap && allocated < to_be_allocated; i++)
+    uint allocated = 0;
+    for (uint i = 0; i < next->memory->cap && allocated < to_be_allocated; i++)
     {
         page *p = next->memory->pages[i];
         if (p->allocated)
@@ -155,7 +155,7 @@ int assign_memory (mem *memory, queue *q, process *next, int time, int (*evict) 
 }
 
 /* apply_quantum applies a quantum to a process */
-int apply_quantum (mem *memory, process *head, process *next, unsigned int quantum, unsigned int time, enum scheduler_algorithms type)
+int apply_quantum (mem *memory, process *head, process *next, uint quantum, uint time, enum scheduler_algorithms type)
 {
     if (type == first_come)
     {
@@ -187,13 +187,13 @@ int apply_quantum (mem *memory, process *head, process *next, unsigned int quant
     return time;
 }
 
-unsigned int left (process *head, unsigned int time)
+uint left (process *head, uint time)
 {
     if (head == NULL)
     {
         return 0;
     }
-    unsigned int count = 0;
+    uint count = 0;
     process *data = head;
     while (data)
     {
