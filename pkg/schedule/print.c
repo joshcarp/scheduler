@@ -8,7 +8,7 @@
 /* print_stats prints statistics on the head node*/
 void print_stats (process *head, int time)
 {
-    int intervals = ceiling (((float)time / 60));
+    int intervals = ceiling ((float)(time - 1) / 60);
     int *throughput = (int *)calloc (intervals, sizeof (int) * (intervals));
     int total_turnaroundtime = 1;
     float time_overhead_max = 0;
@@ -18,6 +18,7 @@ void print_stats (process *head, int time)
     process *next = head;
     while (next)
     {
+
         throughput[((next->last_execution_time - 1) / 60)] += 1;
         total_turnaroundtime += next->last_execution_time - next->arrival;
         overhead = (float)(next->last_execution_time - next->arrival) / next->jobtime;
@@ -31,7 +32,7 @@ void print_stats (process *head, int time)
     }
     int max_throughput = -1;
     int min_throughput = -1;
-    float ave_throughput = (float)num / intervals;
+    float ave_throughput = ceiling ((float)num / intervals);
     for (int i = 0; i < intervals; i++)
     {
         if (throughput[i] > max_throughput || max_throughput == -1)
