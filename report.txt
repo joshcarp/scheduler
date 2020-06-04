@@ -1,10 +1,18 @@
 Customised Scheduling:
 
-Jobs with the least remaining time will be prioritised over longer jobs
-    - good when there are some of small jobs inbetween large jobs
-    - bad when there are too many small jobs inbetween large jobs; in this case large jobs will never finish
+Jobs with the least remaining time will be prioritised over longer jobs, weight is put on old jobs
+    Good when there are some of small jobs inbetween large jobs;
+    The weight/offset to large jobs means that they will eventually finish even if there are a lot of small jobs.
+    If there are a lot of larger jobs, then smaller jobs (possibly io) might be impeded after a while because older jobs will impede them.
+    this is still better than simple shortest job first
+
 Customised Memory:
 
-Jobs that have the longest time remaining will be evicted first
-- good when there are lots of small jobs, which will mean that they don't get evicted
-- bad when there are too many small jobs inbetween large jobs
+Jobs that have the longest time remaining will be evicted first.
+Good when there are lots of small jobs, which will mean that they don't get evicted.
+Large jobs are already going to have their pages deallocated anyway;
+and the percentage is small since most of the running time won't be spent on memory.
+Smaller jobs won't get impeded by this, and once a job has almost completed it won't need to reallocate pages.
+
+Bad when there are too many small jobs inbetween large jobs.
+Larger jobs might get impeded a lot, but as loading time doesn't count towards the quantum the job will eventually finish.
