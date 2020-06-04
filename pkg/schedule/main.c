@@ -96,7 +96,7 @@ int run (process *head, uint quantum, uint memory_size, enum memory_algorithm me
                 printf ("\n");
                 time += loadtime;
             }
-            time = apply_quantum (memory, head, next, quantum, time, schedule);
+            time = apply_quantum (memory, head, next, quantum, time);
             remaining -= next != NULL && next->remaining == 0;
         }
         else
@@ -111,7 +111,6 @@ int run (process *head, uint quantum, uint memory_size, enum memory_algorithm me
     free (memory);
     return 0;
 }
-
 
 /* assign_memory assigns memory to a process */
 uint assign_memory (mem *memory, queue *q, process *next, uint time, uint (*evict) (mem *, process *, uint))
@@ -157,7 +156,7 @@ uint assign_memory (mem *memory, queue *q, process *next, uint time, uint (*evic
 }
 
 /* apply_quantum applies a quantum to a process */
-int apply_quantum (mem *memory, process *head, process *next, uint quantum, uint time, enum scheduler_algorithms type)
+int apply_quantum (mem *memory, process *head, process *next, uint quantum, uint time)
 {
     if (quantum > next->remaining)
     {

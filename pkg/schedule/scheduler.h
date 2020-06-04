@@ -27,7 +27,7 @@ enum memory_algorithm {
 /* "Main" functions that do most of the heavy lifting */
 int run (process *head, uint quantum, uint memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule);
 
-int apply_quantum (mem *memory, process *head, process *next, uint quantum, uint time, enum scheduler_algorithms type);
+int apply_quantum (mem *memory, process *head, process *next, uint quantum, uint time);
 
 uint assign_memory (mem *memory, queue *q, process *next, uint time, uint (*evict) (mem *, process *, uint));
 

@@ -62,6 +62,7 @@ int main (int argc, char **argv)
             quantum = atoi (optarg);
             break;
         }
+    /* if the algorithm isn't round_robin, then the quantum is the uint max value */
     if (algorithm != round_robin)
     {
         quantum = UINT_MAX;
