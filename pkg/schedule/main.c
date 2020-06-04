@@ -1,6 +1,8 @@
 
+/* main.c has all of the "exported" functions that are called from the main; run is called with the parsed fields from the cli */
 #include "scheduler.h"
 #include <assert.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,7 +23,7 @@ bool least_remaining_time (process *d, process *t)
 }
 
 /* run runs the processing algorithms on head */
-int run (process *head, int quantum, uint memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule)
+int run (process *head, uint quantum, uint memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule)
 {
     uint time = 0;
     uint remaining = left (head, -1);
@@ -157,7 +159,7 @@ uint assign_memory (mem *memory, queue *q, process *next, uint time, uint (*evic
 /* apply_quantum applies a quantum to a process */
 int apply_quantum (mem *memory, process *head, process *next, uint quantum, uint time, enum scheduler_algorithms type)
 {
-    if (type == first_come || type == custom_schedule)
+    if (quantum > next->remaining)
     {
         time += next->remaining;
         next->remaining = 0;
@@ -169,36 +171,16 @@ int apply_quantum (mem *memory, process *head, process *next, uint quantum, uint
         next->last_execution_time = time;
         return time;
     }
-    else if (quantum == next->remaining)
+    else
     {
         time += quantum;
         next->remaining = 0;
     }
-    else
-    {
-        time += next->remaining;
-        next->remaining = 0;
-    }
+
     evict_process (memory, next);
     print_evicted (memory, time);
     memory->num_recently_evicted = 0;
     next->last_execution_time = time;
     printf ("%u, FINISHED, id=%u, proc-remaining=%u\n", time, next->procid, left (head, time));
     return time;
-}
-
-uint left (process *head, uint time)
-{
-    if (head == NULL)
-    {
-        return 0;
-    }
-    uint count = 0;
-    process *data = head;
-    while (data)
-    {
-        count += data->remaining != 0 && (data->arrival <= time);
-        data = data->llNext;
-    }
-    return count;
 }

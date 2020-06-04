@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <getopt.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,7 +31,6 @@ int main (int argc, char **argv)
             else if (strcmp (optarg, "ff") == 0)
             {
                 algorithm = first_come;
-                quantum = -1;
             }
             else if (strcmp (optarg, "cs") == 0)
             {
@@ -45,17 +45,14 @@ int main (int argc, char **argv)
             else if (strcmp (optarg, "p") == 0)
             {
                 memallocation = swapping;
-                quantum = -1;
             }
             else if (strcmp (optarg, "v") == 0)
             {
                 memallocation = virtual;
-                quantum = -1;
             }
             else if (strcmp (optarg, "cm") == 0)
             {
                 memallocation = custom_memory;
-                quantum = -1;
             }
             break;
         case 's':
@@ -65,9 +62,17 @@ int main (int argc, char **argv)
             quantum = atoi (optarg);
             break;
         }
+    if (algorithm != round_robin)
+    {
+        quantum = UINT_MAX;
+    }
     FILE *inFile = fopen (file, "r");
     assert (inFile);
+
+    /* Parse the file into a linked list */
     process *head = parseFile (inFile);
+
+    /* Run the scheduler */
     run (head, quantum, memsize, memallocation, algorithm);
     return 0;
 }

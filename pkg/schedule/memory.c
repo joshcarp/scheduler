@@ -1,9 +1,59 @@
+/* memoryallocate hosts all of the utility functions as well as the eviction strategies used in the memory manager */
 #include "scheduler.h"
 #include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
+
+/* virtual_memory_evict takes in a head of the queue and evicts upto needed_pages from the oldest process*/
+uint virtual_memory_evict (mem *memory, process *head, uint needed_pages)
+{
+    while (head && needed_pages > 0)
+    {
+        needed_pages = evict_upto (memory, head->memory, needed_pages);
+        head = head->queueNext;
+    }
+    return needed_pages;
+}
+
+/* swapping_memory_evict evicts the current program from memory */
+uint swapping_memory_evict (mem *memory, process *head, uint needed_pages)
+{
+    while (head && needed_pages > 0)
+    {
+        if (evict_process (memory, head))
+        {
+            needed_pages -= head->memory->cap;
+        }
+        head = head->queueNext;
+    }
+    return needed_pages;
+}
+
+/* custom_memory_evict evicts the command which has the longest time to complete */
+uint custom_memory_evict (mem *memory, process *head, uint needed_pages)
+{
+    process *longest_left = NULL;
+    while (needed_pages > 0)
+    {
+        longest_left = NULL;
+        process *oldest = head;
+        while (oldest)
+        {
+            if (longest_left == NULL || longest_left->remaining < oldest->remaining)
+            {
+                if (oldest->memory->len > 0)
+                {
+                    longest_left = oldest;
+                }
+            }
+            oldest = oldest->queueNext;
+        }
+        needed_pages = evict_upto (memory, longest_left->memory, needed_pages);
+    }
+    return needed_pages;
+}
 
 /* memoryallocate allocates p in memory and returns wether the process was a success */
 bool memoryallocate (mem *memory, page *p)
@@ -76,56 +126,6 @@ int evict_upto (mem *memory, mem *to_evict, int needed_pages)
             needed_pages--;
             to_evict->len--;
         }
-    }
-    return needed_pages;
-}
-
-/* virtual_memory_evict takes in a head of the queue and evicts upto needed_pages from the oldest process*/
-uint virtual_memory_evict (mem *memory, process *head, uint needed_pages)
-{
-    while (head && needed_pages > 0)
-    {
-        needed_pages = evict_upto (memory, head->memory, needed_pages);
-        head = head->queueNext;
-    }
-    return needed_pages;
-}
-
-
-/* swapping_memory_evict evicts the current program from memory */
-uint swapping_memory_evict (mem *memory, process *head, uint needed_pages)
-{
-    while (head && needed_pages > 0)
-    {
-        if (evict_process (memory, head))
-        {
-            needed_pages -= head->memory->cap;
-        }
-        head = head->queueNext;
-    }
-    return needed_pages;
-}
-
-/* custom_memory_evict evicts the command which has the longest time to complete */
-uint custom_memory_evict (mem *memory, process *head, uint needed_pages)
-{
-    process *longest_left = NULL;
-    while (needed_pages > 0)
-    {
-        longest_left = NULL;
-        process *oldest = head;
-        while (oldest)
-        {
-            if (longest_left == NULL || longest_left->remaining < oldest->remaining)
-            {
-                if (oldest->memory->len > 0)
-                {
-                    longest_left = oldest;
-                }
-            }
-            oldest = oldest->queueNext;
-        }
-        needed_pages = evict_upto (memory, longest_left->memory, needed_pages);
     }
     return needed_pages;
 }

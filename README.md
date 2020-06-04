@@ -1,17 +1,15 @@
 # c_project_template
 
-## pkg/ 
-- Common libraries/packages; No main functions
-
 ## cmd/
 - main packages that go into own folders
 
-## vendor/ 
-- vendored code; unity testing framework
+## pkg/ 
+- Common libraries/packages; No main functions
 
 ## scripts/ 
 - scripts to run tests/valgrind
 
+---
 # COMP30023 Project 2
 
 # Process and Memory Management

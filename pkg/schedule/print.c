@@ -1,4 +1,5 @@
 
+/* print.c includes all of the printing tasks that are required */
 #include "scheduler.h"
 #include <assert.h>
 #include <stdbool.h>

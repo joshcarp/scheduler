@@ -9,6 +9,7 @@
 #define DATA_H
 #endif
 
+/* new_q makes a new queue */
 queue *new_q ()
 {
     queue *q = (struct queue *)malloc (sizeof (struct queue));
@@ -17,25 +18,8 @@ queue *new_q ()
     return q;
 }
 
-
-void add (queue *q, process *d)
-{
-    struct process *temp = d;
-    q->num++;
-
-    // If queue is empty, then new node is front and rear both
-    if (q->rear == NULL)
-    {
-        q->front = q->rear = temp;
-        return;
-    }
-
-    // Add the new node at the end of queue and change rear
-    q->rear->queueNext = temp;
-    q->rear = temp;
-}
-
-
+/* add_sorted allows for an element to be sorted and a comparision function to be used to determine
+where in the linked list it should be inserted */
 void add_sorted (queue *q, process *d, bool (*cmp) (process *d, process *t))
 {
     struct process *temp = d;
@@ -79,6 +63,7 @@ void add_sorted (queue *q, process *d, bool (*cmp) (process *d, process *t))
     q->rear = temp;
 }
 
+/* pop removes the next process from the queue */
 process *pop (queue *q)
 {
     if (q->front == NULL || q->num == 0)

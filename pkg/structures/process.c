@@ -86,3 +86,20 @@ page *new_page ()
     p->size = PAGE_LENGTH;
     return p;
 }
+
+/* left counts the amount of processes left after a time */
+uint left (process *head, uint time)
+{
+    if (head == NULL)
+    {
+        return 0;
+    }
+    uint count = 0;
+    process *data = head;
+    while (data)
+    {
+        count += data->remaining != 0 && (data->arrival <= time);
+        data = data->llNext;
+    }
+    return count;
+}

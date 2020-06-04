@@ -8,9 +8,6 @@
 #define MAXFIELD 128
 #define MAXFIELDNUM 5
 
-// Typedef the key so it could theoreticallybe changed 
-typedef int dictKey_t;
-
 /* process is a linked list and has a key, and a 'location', which is the
 amount of bytes of data from the start of the input file. When needing to print this value will 
 be used to offset the start of the file (ie pointer arithmetic for files)*/

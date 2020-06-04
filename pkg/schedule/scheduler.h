@@ -10,22 +10,22 @@
 
 enum scheduler_algorithms {
     unset_scheduler = 0,
-    first_come = 1,
-    round_robin = 2,
-    custom_schedule = 3,
+    first_come = 1<<1,
+    round_robin = 1<<2,
+    custom_schedule = 1<<3,
 } scheduler_algorithms;
 
 enum memory_algorithm {
     unset_memory = 0,
-    unlimited = 1,
-    swapping = 2,
-    virtual = 3,
-    custom_memory = 4,
+    unlimited = 1<<1,
+    swapping = 1<<2,
+    virtual = 1<<3,
+    custom_memory = 1<<4,
 
 } memory_algorithm;
 
 /* "Main" functions that do most of the heavy lifting */
-int run (process *head, int quantum, uint memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule);
+int run (process *head, uint quantum, uint memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule);
 
 int apply_quantum (mem *memory, process *head, process *next, uint quantum, uint time, enum scheduler_algorithms type);
 
