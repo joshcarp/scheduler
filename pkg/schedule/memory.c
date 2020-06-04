@@ -8,7 +8,7 @@
 /* memoryallocate allocates p in memory and returns wether the process was a success */
 bool memoryallocate (mem *memory, page *p)
 {
-    for (uint i = 0; i < memory->cap; i++)
+    for (unsigned int i = 0; i < memory->cap; i++)
     {
         if (memory->pages[i] == NULL)
         {
@@ -40,7 +40,7 @@ bool evict_page (mem *memory, page *next)
 bool evict_process (mem *memory, process *next)
 {
     bool success = false;
-    for (uint i = 0; i < next->memory->cap; i++)
+    for (unsigned int i = 0; i < next->memory->cap; i++)
     {
         if (next->memory->pages[i]->allocated)
         {
@@ -55,7 +55,7 @@ bool evict_process (mem *memory, process *next)
 int loaded_pages (mem *memory)
 {
     int loaded = 0;
-    for (uint i = 0; i < memory->cap; i++)
+    for (unsigned int i = 0; i < memory->cap; i++)
     {
         if (memory->pages[i]->allocated)
         {
@@ -69,7 +69,7 @@ int loaded_pages (mem *memory)
 /* evict_upto evicts needed pages from to_evict */
 int evict_upto (mem *memory, mem *to_evict, int needed_pages)
 {
-    for (uint i = 0; i < to_evict->cap && needed_pages > 0; i++)
+    for (unsigned int i = 0; i < to_evict->cap && needed_pages > 0; i++)
     {
         if (evict_page (memory, to_evict->pages[i]))
         {
@@ -112,13 +112,16 @@ int custom_memory_evict (mem *memory, process *head, int needed_pages)
     process *longest_left = NULL;
     while (needed_pages > 0)
     {
-        longest_left = head;
+        longest_left = NULL;
         process *oldest = head;
         while (oldest)
         {
-            if ((longest_left->remaining < oldest->remaining && oldest->memory->len < oldest->memory->cap))
+            if (longest_left == NULL || longest_left->remaining < oldest->remaining)
             {
-                longest_left = oldest;
+                if (oldest->memory->len > 0)
+                {
+                    longest_left = oldest;
+                }
             }
             oldest = oldest->queueNext;
         }

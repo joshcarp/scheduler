@@ -8,7 +8,7 @@
 /* print_stats prints statistics on the head node*/
 void print_stats (process *head, int time)
 {
-    int intervals = (int)(((float)time / 60));
+    int intervals = ceiling (((float)time / 60));
     int *throughput = (int *)calloc (intervals, sizeof (int) * (intervals));
     int total_turnaroundtime = 1;
     float time_overhead_max = 0;

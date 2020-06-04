@@ -47,6 +47,7 @@ struct mem{
 	uint num_recently_evicted;
 	uint cap;
 	uint len;
+	uint num_allocated;
 };
 
 struct queue{

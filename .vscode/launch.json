@@ -11,7 +11,7 @@
             "request": "launch",
             // "program": "${workspaceRoot}/bin/processest",
             "program": "${workspaceRoot}/scheduler",
-            "args": ["-f", "tests/scenarios/processes.txt", "-a", "rr", "-m", "u", "-q", "10"],
+            "args": ["-f", "benchmark-cm.txt", "-a", "rr", "-s", "40", "-m", "cm", "-q", "10"],
             "cwd": "${workspaceFolder}",
             "MIMode": "lldb",
             // "externalConsole": true,
