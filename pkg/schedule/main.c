@@ -23,9 +23,9 @@ bool least_remaining_time (process *d, process *t)
 /* run runs the processing algorithms on head */
 int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_algo, enum scheduler_algorithms schedule)
 {
-    int time = 0;
+    unsigned int time = 0;
     int remaining = left (head, -1);
-    int loadtime = 0;
+    unsigned int loadtime = 0;
     queue *q = new_q ();
     process *next = NULL;
     process *data = head;
@@ -80,15 +80,15 @@ int run (process *head, int quantum, int memory_size, enum memory_algorithm mem_
         {
             if (mem_algo == unlimited)
             {
-                printf ("%d, RUNNING, id=%d, remaining-time=%d\n", time, next->procid, next->remaining);
+                printf ("%u, RUNNING, id=%u, remaining-time=%u\n", time, next->procid, next->remaining);
             }
             else
             {
                 loadtime = assign_memory (memory, q, next, time, eviction_function);
-                printf ("%d, RUNNING, ", time);
-                printf ("id=%d, ", next->procid);
-                printf ("remaining-time=%d, ", next->remaining);
-                printf ("load-time=%d, ", loadtime);
+                printf ("%u, RUNNING, ", time);
+                printf ("id=%u, ", next->procid);
+                printf ("remaining-time=%u, ", next->remaining);
+                printf ("load-time=%u, ", loadtime);
                 printf ("mem-usage=%.f%%, ", ceiling (((float)memory->len / memory->cap) * (float)100));
                 print_addresses (next->memory->pages, next->memory->cap, true);
                 printf ("\n");
@@ -155,7 +155,7 @@ int assign_memory (mem *memory, queue *q, process *next, int time, int (*evict) 
 }
 
 /* apply_quantum applies a quantum to a process */
-int apply_quantum (mem *memory, process *head, process *next, int quantum, int time, enum scheduler_algorithms type)
+int apply_quantum (mem *memory, process *head, process *next, unsigned int quantum, unsigned int time, enum scheduler_algorithms type)
 {
     if (type == first_come)
     {
@@ -183,21 +183,21 @@ int apply_quantum (mem *memory, process *head, process *next, int quantum, int t
     print_evicted (memory, time);
     memory->num_recently_evicted = 0;
     next->last_execution_time = time;
-    printf ("%d, FINISHED, id=%d, proc-remaining=%d\n", time, next->procid, left (head, time));
+    printf ("%u, FINISHED, id=%u, proc-remaining=%u\n", time, next->procid, left (head, time));
     return time;
 }
 
-int left (process *head, int time)
+unsigned int left (process *head, unsigned int time)
 {
     if (head == NULL)
     {
         return 0;
     }
-    int count = 0;
+    unsigned int count = 0;
     process *data = head;
     while (data)
     {
-        count += data->remaining != 0 && (data->arrival <= time || time == -1);
+        count += data->remaining != 0 && (data->arrival <= time);
         data = data->llNext;
     }
     return count;

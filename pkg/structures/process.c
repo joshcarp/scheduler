@@ -17,14 +17,14 @@ process *newData (char *entry)
     process *d = blankData ();
     d->llNext = NULL;
     d->queueNext = NULL;
-    d->arrival = atoi (fields[0]);
-    d->jobtime = atoi (fields[3]);
-    d->procid = atoi (fields[1]);
+    d->arrival = (unsigned int)atol (fields[0]);
+    d->jobtime = (unsigned int)atol (fields[3]);
+    d->procid = (unsigned int)atol (fields[1]);
     d->remaining = d->jobtime;
     d->loadtime = 0;
     d->last_execution_time = 0;
     d->last_execution_time = 0;
-    d->memory = new_memory (atoi (fields[2]) / PAGE_LENGTH);
+    d->memory = new_memory (atol (fields[2]) / PAGE_LENGTH);
     for (int i = 0; i < d->memory->cap; i++)
     {
         d->memory->pages[i] = new_page ();
